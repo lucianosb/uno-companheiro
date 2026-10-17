@@ -33,7 +33,7 @@ class UnoGame {
 
   initPlayers() {
     this.players = [
-      { id: 0, name: 'Você (Companheiro)', isHuman: true, hand: [], avatar: '🧑‍💼', quote: 'A esperança venceu o medo!' },
+      { id: 0, name: 'Companheiro(a)', isHuman: true, hand: [], avatar: '🧑', quote: 'A esperança venceu o medo!' },
       { id: 1, name: 'Fernando Haddad', isHuman: false, hand: [], avatar: '📚', quote: 'Ajustando as alíquotas do baralho!' },
       { id: 2, name: 'Geraldo Alckmin', isHuman: false, hand: [], avatar: '🥣', quote: 'Com calma e chuchu, a gente vence a mesa.' },
       { id: 3, name: 'Janja Lula da Silva', isHuman: false, hand: [], avatar: '✨', quote: 'Companheirismo e alegria em cada jogada!' }

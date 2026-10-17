@@ -86,7 +86,7 @@
           <div class="stack-layer-1"></div>
           <div class="top-deck-card"></div>
         </div>
-        <span style="font-size: 11px; color: #a1a1aa; margin-top: 6px; font-weight: 600;">COMPRAR (ESPAÇO)</span>
+        <span style="font-size: 11px; color: #cbd5e1; margin-top: 6px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">COMPRAR <kbd class="kbd-key">M</kbd></span>
       </div>
 
       <!-- Center Status: Active Color & Direction -->
@@ -116,16 +116,24 @@
     <section id="user-hand-section" class="user-hand-section">
       <div class="hand-header">
         <div class="user-title">
-          <span style="font-size: 24px;">🧑‍💼</span>
-          <span>Sua Mão (Companheiro)</span>
+          <span style="font-size: 24px;">🧑</span>
+          <span>Companheiro(a)</span>
           <span id="user-card-count" class="cards-badge" style="background: #2563eb;">7 cartas</span>
         </div>
 
         <div class="hand-actions-bar">
-          <button id="btn-draw-card" class="btn" title="Comprar carta da pilha (Espaço)">📥 Comprar Carta</button>
-          <button id="btn-pass-turn" class="btn" style="display: none;" title="Passar a vez se não puder jogar">⏭️ Passar Vez</button>
-          <button id="btn-shout-companheiro" class="btn btn-primary btn-action" title="Gritar quando tiver apenas 1 carta restante! (Tecla C)">📢 Gritar COMPANHEIRO!</button>
-          <button id="btn-challenge-uno" class="btn btn-warning" title="Pegar adversário que esqueceu de gritar Companheiro!">⚖️ Fiscalizar</button>
+          <button id="btn-draw-card" class="btn" title="Comprar carta da pilha (Tecla M)">
+            📥 Comprar Carta <kbd class="kbd-key">M</kbd>
+          </button>
+          <button id="btn-pass-turn" class="btn" style="display: none;" title="Passar a vez se não puder jogar (Tecla N)">
+            ⏭️ Passar Vez <kbd class="kbd-key">N</kbd>
+          </button>
+          <button id="btn-shout-companheiro" class="btn btn-primary btn-action" title="Gritar quando tiver apenas 1 carta restante! (Tecla C)">
+            📢 Gritar COMPANHEIRO! <kbd class="kbd-key">C</kbd>
+          </button>
+          <button id="btn-challenge-uno" class="btn btn-warning" title="Pegar adversário que esqueceu de gritar Companheiro! (Tecla F)">
+            ⚖️ Fiscalizar <kbd class="kbd-key">F</kbd>
+          </button>
         </div>
       </div>
 
@@ -169,9 +177,11 @@
       </div>
 
       <button id="btn-faz-o-l-action" class="faz-o-l-hero-btn">
-        <span style="font-size: 42px;">🤟</span>
+        <span style="font-size: 38px;">🤟</span>
         <span>FAZ O L!</span>
-        <span style="font-size: 11px; color: #ffffff; font-weight: normal; margin-top: 4px;">(ou tecla L)</span>
+        <span style="margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: normal; color: #ffffff;">
+          Aperte <kbd class="kbd-key" style="min-width: 26px; height: 22px; font-size: 12px; margin-left: 0;">L</kbd>
+        </span>
       </button>
 
       <div class="faz-o-l-ranking">

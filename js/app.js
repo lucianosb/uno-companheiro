@@ -159,20 +159,36 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Keyboard Shortcuts
+    // Keyboard Shortcuts: C (Companheiro), N (Passar), M / Espaço (Comprar), L (Faz o L), F (Fiscalizar)
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'l' || e.key === 'L') {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      const key = e.key.toLowerCase();
+
+      if (key === 'l') {
         if (fazOLModal.classList.contains('open')) {
+          e.preventDefault();
           btnFazOL.click();
         }
-      } else if (e.code === 'Space') {
+      } else if (key === 'm' || e.code === 'Space') {
         if (game.currentTurn === 0 && !game.isGameOver && !isAnyModalOpen()) {
           e.preventDefault();
           game.drawCard(0);
         }
-      } else if (e.key === 'c' || e.key === 'C') {
+      } else if (key === 'n') {
+        if (game.currentTurn === 0 && !game.isGameOver && !isAnyModalOpen()) {
+          e.preventDefault();
+          game.passTurn(0);
+        }
+      } else if (key === 'c') {
         if (!isAnyModalOpen()) {
+          e.preventDefault();
           game.shoutCompanheiro(0);
+        }
+      } else if (key === 'f') {
+        if (!isAnyModalOpen()) {
+          e.preventDefault();
+          btnChallenge.click();
         }
       } else if (e.key === 'Escape') {
         closeAllModals();
@@ -401,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Add human
       reactions.push({
         id: 0,
-        name: 'Você (Companheiro)',
+        name: 'Companheiro(a)',
         time: userReactionTime || 3.0,
         isHuman: true
       });
