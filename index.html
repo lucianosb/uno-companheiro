@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNO COMPANHEIRO - Edição Especial Lula</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23dc2626'/><polygon points='50,15 61,38 86,38 66,54 73,78 50,64 27,78 34,54 14,38 39,38' fill='%23facc15'/></svg>">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="game-header">
+    <div class="brand-container">
+      <div class="logo-badge">
+        <span style="font-size: 20px;">⭐</span>
+        <span class="logo-title">UNO COMPANHEIRO</span>
+      </div>
+      <div class="brand-subtitle">Edição Oficial dos Trabalhadores</div>
+    </div>
+
+    <div class="header-controls">
+      <button id="btn-rules" class="btn" title="Ver regras e cartas especiais">📜 Regras</button>
+      <button id="btn-mute" class="btn" title="Ligar / Desligar áudio">🔊 Som</button>
+      <button id="btn-restart" class="btn btn-warning" title="Reiniciar partida">🔄 Novo Jogo</button>
+    </div>
+  </header>
+
+  <!-- Main Game Arena -->
+  <main class="table-viewport">
+    
+    <!-- Opponents Section (Top / Sides) -->
+    <section class="opponents-row">
+      
+      <!-- Opponent 1: Fernando Haddad (Left) -->
+      <div id="opponent-1" class="opponent-slot">
+        <div class="speech-bubble">Ajustando as alíquotas do baralho!</div>
+        <div class="opponent-header">
+          <div class="avatar-badge">📚</div>
+          <div class="opponent-info">
+            <div class="opponent-name">Fernando Haddad</div>
+            <div class="opponent-role">Ministro das Cartas</div>
+            <div class="cards-badge">7 cartas</div>
+          </div>
+        </div>
+        <div class="opponent-cards-fan"></div>
+      </div>
+
+      <!-- Opponent 2: Geraldo Alckmin (Top Center) -->
+      <div id="opponent-2" class="opponent-slot">
+        <div class="speech-bubble">Com calma e chuchu, a gente vence a mesa.</div>
+        <div class="opponent-header">
+          <div class="avatar-badge">🥣</div>
+          <div class="opponent-info">
+            <div class="opponent-name">Geraldo Alckmin</div>
+            <div class="opponent-role">Vice-Presidente Moderado</div>
+            <div class="cards-badge">7 cartas</div>
+          </div>
+        </div>
+        <div class="opponent-cards-fan"></div>
+      </div>
+
+      <!-- Opponent 3: Janja (Right) -->
+      <div id="opponent-3" class="opponent-slot">
+        <div class="speech-bubble">Companheirismo e alegria em cada jogada!</div>
+        <div class="opponent-header">
+          <div class="avatar-badge">✨</div>
+          <div class="opponent-info">
+            <div class="opponent-name">Janja Lula da Silva</div>
+            <div class="opponent-role">Primeira-Dama & Socióloga</div>
+            <div class="cards-badge">7 cartas</div>
+          </div>
+        </div>
+        <div class="opponent-cards-fan"></div>
+      </div>
+
+    </section>
+
+    <!-- Center Board (Piles, Color, Direction) -->
+    <section class="center-board">
+      
+      <!-- Draw Deck Pile -->
+      <div id="deck-pile" class="deck-pile" title="Clique ou pressione ESPAÇO para comprar carta">
+        <div class="pile-card-wrapper">
+          <div class="stack-effect"></div>
+          <div class="stack-layer-1"></div>
+          <div class="top-deck-card"></div>
+        </div>
+        <span style="font-size: 11px; color: #a1a1aa; margin-top: 6px; font-weight: 600;">COMPRAR (ESPAÇO)</span>
+      </div>
+
+      <!-- Center Status: Active Color & Direction -->
+      <div class="table-center-indicator">
+        <div id="active-color-pill" class="active-color-pill" style="border: 2px solid #dc2626;">
+          <span id="color-dot" class="color-dot" style="background-color: #dc2626;"></span>
+          <span id="color-name-text">Vermelho</span>
+        </div>
+
+        <div class="direction-indicator">
+          <span id="direction-arrows" class="direction-arrows">🔄</span>
+          <span id="direction-text">Sentido Horário</span>
+        </div>
+      </div>
+
+      <!-- Discard Pile (Top Card) -->
+      <div class="discard-pile">
+        <div id="discard-card" class="discard-card-wrapper">
+          <!-- Rendered Discard Card SVG injected here -->
+        </div>
+        <span style="font-size: 11px; color: #a1a1aa; margin-top: 6px; font-weight: 600;">MESA DE DISCURSO</span>
+      </div>
+
+    </section>
+
+    <!-- Human Player Hand (Bottom) -->
+    <section id="user-hand-section" class="user-hand-section">
+      <div class="hand-header">
+        <div class="user-title">
+          <span style="font-size: 24px;">🧑‍💼</span>
+          <span>Sua Mão (Companheiro)</span>
+          <span id="user-card-count" class="cards-badge" style="background: #2563eb;">7 cartas</span>
+        </div>
+
+        <div class="hand-actions-bar">
+          <button id="btn-draw-card" class="btn" title="Comprar carta da pilha (Espaço)">📥 Comprar Carta</button>
+          <button id="btn-pass-turn" class="btn" style="display: none;" title="Passar a vez se não puder jogar">⏭️ Passar Vez</button>
+          <button id="btn-shout-companheiro" class="btn btn-primary btn-action" title="Gritar quando tiver apenas 1 carta restante! (Tecla C)">📢 Gritar COMPANHEIRO!</button>
+          <button id="btn-challenge-uno" class="btn btn-warning" title="Pegar adversário que esqueceu de gritar Companheiro!">⚖️ Fiscalizar</button>
+        </div>
+      </div>
+
+      <!-- Interactive Hand Cards Fan -->
+      <div id="user-cards-container" class="cards-scroll-container">
+        <!-- Human cards injected here -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notification Toast -->
+  <div id="action-toast" class="action-log-toast" style="display: none;"></div>
+
+  <!-- MODAL: Color Picker Wheel -->
+  <div id="color-picker-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <h2 class="modal-title">ESCOLHA A NOVA COR DA MESA</h2>
+      <p class="modal-desc">Como companheiro que jogou um coringa, defina a nova cor que governará as próximas rodadas:</p>
+      
+      <div class="color-picker-grid">
+        <button class="color-choice-btn choice-red" data-color="red">🔴 Vermelho</button>
+        <button class="color-choice-btn choice-blue" data-color="blue">🔵 Azul</button>
+        <button class="color-choice-btn choice-yellow" data-color="yellow">🟡 Amarelo</button>
+        <button class="color-choice-btn choice-green" data-color="green">🟢 Verde</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: FAZ O L! Quick-Time Event -->
+  <div id="faz-o-l-modal" class="modal-backdrop faz-o-l-modal">
+    <div class="modal-card" style="border: 3px solid #facc15;">
+      <h2 class="modal-title" style="color: #fef08a; font-size: 28px;">🤟 FAZ O L! 🤟</h2>
+      <p class="modal-desc" style="font-size: 15px; color: #fef08a;">
+        Ação rápida! Todos os companheiros devem fazer o sinal do "L" com a mão!<br>
+        <strong>O ÚLTIMO A FAZER COMPRA 2 CARTAS!</strong>
+      </p>
+
+      <div style="font-size: 18px; color: #ffffff; font-weight: 700; margin-bottom: 8px;">
+        Tempo: <span id="faz-o-l-timer" style="color: #facc15; font-family: monospace; font-size: 24px;">0.000s</span>
+      </div>
+
+      <button id="btn-faz-o-l-action" class="faz-o-l-hero-btn">
+        <span style="font-size: 42px;">🤟</span>
+        <span>FAZ O L!</span>
+        <span style="font-size: 11px; color: #ffffff; font-weight: normal; margin-top: 4px;">(ou tecla L)</span>
+      </button>
+
+      <div class="faz-o-l-ranking">
+        <div style="font-weight: 700; font-size: 12px; color: #facc15; margin-bottom: 6px; text-transform: uppercase;">
+          Tempo de Reação da Roda:
+        </div>
+        <div id="faz-o-l-ranking-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Sigilo Quebrado (Troca de Mão) -->
+  <div id="sigilo-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 680px;">
+      <h2 class="modal-title">📂 SIGILO QUEBRADO</h2>
+      <p class="modal-desc">
+        Tudo transparente e às claras na mesa! Escolha um companheiro para espiar a mão completa e trocar todo o seu baralho com ele:
+      </p>
+
+      <div id="sigilo-targets-container" class="sigilo-targets-grid">
+        <!-- Opponents choices injected here -->
+      </div>
+
+      <div style="text-align: left; margin: 14px 0 6px;">
+        <span style="font-weight: 700; color: #fef08a; font-size: 13px;">Cartas Reveladas do Oponente:</span>
+      </div>
+      <div id="sigilo-spy-cards" class="spy-cards-preview">
+        <!-- Face-up revealed cards -->
+      </div>
+
+      <div style="margin: 20px 0 10px;">
+        <span style="font-weight: 700; color: #fef08a; font-size: 13px; display: block; margin-bottom: 8px;">
+          Escolha a nova cor da mesa após a troca:
+        </span>
+        <div style="display: flex; justify-content: center; gap: 8px;">
+          <button class="btn sigilo-color-btn" data-color="red" style="background: #dc2626; color: #fff; outline: 3px solid #fff;">Vermelho</button>
+          <button class="btn sigilo-color-btn" data-color="blue" style="background: #0284c7; color: #fff;">Azul</button>
+          <button class="btn sigilo-color-btn" data-color="yellow" style="background: #eab308; color: #1c1917;">Amarelo</button>
+          <button class="btn sigilo-color-btn" data-color="green" style="background: #16a34a; color: #fff;">Verde</button>
+        </div>
+      </div>
+
+      <button id="btn-confirm-sigilo" class="btn btn-warning btn-action" style="margin-top: 16px; width: 100%;">
+        Confirmar Troca de Mão Agora!
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Regras do Jogo -->
+  <div id="rules-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 720px;">
+      <h2 class="modal-title">REGRAS DO UNO COMPANHEIRO</h2>
+      <p class="modal-desc">Regulamento oficial com as cartas personalizadas e efeitos:</p>
+      
+      <div id="rules-list-container" class="rules-scrollable">
+        <!-- Rendered rules list injected here -->
+      </div>
+
+      <button class="btn btn-primary close-modal-btn" style="margin-top: 18px; width: 100%;">
+        Entendido, Voltar à Mesa!
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Fim de Jogo (Vitória) -->
+  <div id="win-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div id="win-avatar" style="font-size: 60px; margin-bottom: 12px;">🏆</div>
+      <h2 id="win-title" class="modal-title">FIM DE JOGO!</h2>
+      <p id="win-text" class="modal-desc" style="font-size: 16px;"></p>
+
+      <button id="btn-play-again" class="btn btn-warning btn-action" style="width: 100%; margin-top: 10px;">
+        Jogar Outra Partida!
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/cards.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
