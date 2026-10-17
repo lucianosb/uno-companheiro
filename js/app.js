@@ -115,6 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCompanheiro.addEventListener('click', () => {
       if (!game.isGameOver) {
         game.shoutCompanheiro(0);
+        const userBubble = document.getElementById('user-speech-bubble');
+        if (userBubble) {
+          userBubble.textContent = 'COMPANHEIRO! É só mais uma pra vitória!';
+          userBubble.classList.add('show');
+          clearTimeout(userBubble._timer);
+          userBubble._timer = setTimeout(() => userBubble.classList.remove('show'), 3200);
+        }
       }
     });
 
@@ -129,8 +136,14 @@ document.addEventListener('DOMContentLoaded', () => {
             challenged = true;
           }
         });
+        const userBubble = document.getElementById('user-speech-bubble');
         if (!challenged) {
           showToastNotification('Nenhum adversário pendente de fiscalização!');
+        } else if (userBubble) {
+          userBubble.textContent = 'Fiscalização atuante! Pega no pulo sem gritar Companheiro!';
+          userBubble.classList.add('show');
+          clearTimeout(userBubble._timer);
+          userBubble._timer = setTimeout(() => userBubble.classList.remove('show'), 3200);
         }
       }
     });
@@ -285,12 +298,23 @@ document.addEventListener('DOMContentLoaded', () => {
         fanContainer.innerHTML = fanHTML;
       }
 
-      // Show speech bubble occasionally during bot's turn
+      // Show speech bubble during bot's turn with random quote
       const bubble = slot.querySelector('.speech-bubble');
-      if (bubble && state.currentTurn === id) {
-        bubble.textContent = player.quote;
-        bubble.classList.add('show');
-        setTimeout(() => bubble.classList.remove('show'), 2500);
+      if (bubble) {
+        if (state.currentTurn === id) {
+          if (slot._lastTurnId !== state.currentTurn) {
+            slot._lastTurnId = state.currentTurn;
+            const quotes = player.quotes || [player.quote];
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            bubble.textContent = randomQuote;
+            bubble.classList.add('show');
+            clearTimeout(bubble._timer);
+            bubble._timer = setTimeout(() => bubble.classList.remove('show'), 2800);
+          }
+        } else {
+          slot._lastTurnId = null;
+          bubble.classList.remove('show');
+        }
       }
     });
 
@@ -298,10 +322,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const user = state.players[0];
     userCardCountEl.textContent = `${user.hand.length} cartas`;
     const userSection = document.getElementById('user-hand-section');
+    const userBubble = document.getElementById('user-speech-bubble');
+
     if (state.currentTurn === 0) {
       userSection.classList.add('active-turn');
+      if (userBubble && userSection._lastTurnId !== state.currentTurn) {
+        userSection._lastTurnId = state.currentTurn;
+        const quotes = user.quotes || [user.quote];
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        userBubble.textContent = randomQuote;
+        userBubble.classList.add('show');
+        clearTimeout(userBubble._timer);
+        userBubble._timer = setTimeout(() => userBubble.classList.remove('show'), 3500);
+      }
     } else {
       userSection.classList.remove('active-turn');
+      userSection._lastTurnId = null;
+      if (userBubble) userBubble.classList.remove('show');
     }
 
     // Render cards
@@ -547,7 +584,9 @@ document.addEventListener('DOMContentLoaded', () => {
       winAvatar.textContent = '🏆';
     } else {
       winTitle.textContent = `VITÓRIA DE ${winner.name.toUpperCase()}!`;
-      winText.textContent = `"${winner.quote}"`;
+      const winQuotes = winner.quotes || [winner.quote];
+      const winQuote = winQuotes[Math.floor(Math.random() * winQuotes.length)];
+      winText.textContent = `"${winQuote}"`;
       winAvatar.textContent = winner.avatar;
     }
 

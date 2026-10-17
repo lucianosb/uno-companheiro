@@ -33,10 +33,66 @@ class UnoGame {
 
   initPlayers() {
     this.players = [
-      { id: 0, name: 'Companheiro(a)', isHuman: true, hand: [], avatar: '🧑', quote: 'A esperança venceu o medo!' },
-      { id: 1, name: 'Fernando Haddad', isHuman: false, hand: [], avatar: '📚', quote: 'Ajustando as alíquotas do baralho!' },
-      { id: 2, name: 'Geraldo Alckmin', isHuman: false, hand: [], avatar: '🥣', quote: 'Com calma e chuchu, a gente vence a mesa.' },
-      { id: 3, name: 'Janja Lula da Silva', isHuman: false, hand: [], avatar: '✨', quote: 'Companheirismo e alegria em cada jogada!' }
+      {
+        id: 0,
+        name: 'Companheiro(a)',
+        isHuman: true,
+        hand: [],
+        avatar: '🧑',
+        quote: 'A esperança venceu o medo!',
+        quotes: [
+          'A esperança venceu o medo!',
+          'Trabalhadores e trabalhadoras do baralho, uni-vos!',
+          'Nunca antes na história deste Uno se jogou tão bem!',
+          'Companheirismo e democracia nesta mesa!',
+          'Não há força maior que a união de uma mão vencedora!'
+        ]
+      },
+      {
+        id: 1,
+        name: 'Fernando Haddad',
+        isHuman: false,
+        hand: [],
+        avatar: '📚',
+        quote: 'Ajustando as alíquotas do baralho!',
+        quotes: [
+          'Ajustando as alíquotas do baralho!',
+          'Essa compra de cartas está sujeita ao imposto de importação!',
+          'Déficit zero de cartas na minha mão até o final do ano!',
+          'Reforma tributária nesta mesa: cartas só com nota fiscal!',
+          'Taxando cada descarte com muito amor e responsabilidade fiscal!'
+        ]
+      },
+      {
+        id: 2,
+        name: 'Geraldo Alckmin',
+        isHuman: false,
+        hand: [],
+        avatar: '🥣',
+        quote: 'Com calma e chuchu, a gente vence a mesa.',
+        quotes: [
+          'Com calma e chuchu, a gente vence a mesa.',
+          'Uma aliança ampla e democrática contra a sua vitória!',
+          'Como médico, receito repouso e mais duas cartas para você.',
+          'Sem radicalismos, companheiro: jogada moderada e certeira.',
+          'Dizem que sou insosso, mas no Uno sou pura emoção!'
+        ]
+      },
+      {
+        id: 3,
+        name: 'Janja Lula da Silva',
+        isHuman: false,
+        hand: [],
+        avatar: '✨',
+        quote: 'Companheirismo e alegria em cada jogada!',
+        quotes: [
+          'Companheirismo e alegria em cada jogada!',
+          'A Resistência e a Paris aprovaram esse descarte!',
+          'Subindo a rampa do Uno com muito orgulho e elegância!',
+          'Comprei a gravata do presidente e agora compro a vitória na mesa!',
+          'Festival do Futuro: música boa e cartas voando na oposição!'
+        ]
+      }
     ];
   }
 

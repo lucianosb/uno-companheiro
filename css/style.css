@@ -370,6 +370,64 @@ body {
   z-index: 1;
 }
 
+/* User Speech Bubble (Companheiro/a - Bottom Section) */
+#user-hand-section .user-speech-bubble {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  top: auto;
+  left: 20px;
+  background: #fef08a;
+  color: #1c1917;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 2px solid #ca8a04;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  max-width: 290px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 80;
+  transform: translateY(6px);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#user-hand-section .user-speech-bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Pointer arrow pointing DOWN to the user header */
+#user-hand-section .user-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  top: auto;
+  left: 24px;
+  border-width: 8px 8px 0;
+  border-style: solid;
+  border-color: #ca8a04 transparent transparent;
+  display: block;
+  width: 0;
+}
+
+#user-hand-section .user-speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  top: auto;
+  left: 25px;
+  border-width: 7px 7px 0;
+  border-style: solid;
+  border-color: #fef08a transparent transparent;
+  display: block;
+  width: 0;
+  z-index: 1;
+}
+
 /* Card fans for opponents */
 .opponent-cards-fan {
   display: flex;
