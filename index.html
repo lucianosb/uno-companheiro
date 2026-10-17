@@ -21,6 +21,7 @@
 
     <div class="header-controls">
       <button id="btn-rules" class="btn" title="Ver regras e cartas especiais">📜 Regras</button>
+      <button id="btn-about" class="btn" title="Sobre o projeto">ℹ️ Sobre</button>
       <button id="btn-mute" class="btn" title="Ligar / Desligar áudio">🔊 Som</button>
       <button id="btn-restart" class="btn btn-warning" title="Reiniciar partida">🔄 Novo Jogo</button>
     </div>
@@ -243,6 +244,36 @@
 
       <button class="btn btn-primary close-modal-btn" style="margin-top: 18px; width: 100%;">
         Entendido, Voltar à Mesa!
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Sobre o Projeto -->
+  <div id="about-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 540px;">
+      <div style="font-size: 46px; margin-bottom: 8px;">🎴</div>
+      <h2 class="modal-title" style="margin-bottom: 4px;">UNO COMPANHEIRO</h2>
+      <div style="font-size: 13px; color: #fef08a; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">
+        Edição Especial Lula
+      </div>
+
+      <p class="modal-desc" style="font-size: 14.5px; line-height: 1.6; margin-bottom: 20px;">
+        Uma versão web jogável, interativa e bem-humorada do UNO inspirada no Presidente Lula e na política brasileira contemporânea, com design fiel ao baralho físico e todas as cartas e regras personalizadas implementadas!
+      </p>
+
+      <div style="background: rgba(0, 0, 0, 0.45); border: 1px solid #5a3217; border-radius: 12px; padding: 16px; margin-bottom: 22px; font-size: 13.5px; line-height: 1.7; color: #e2e8f0; text-align: left;">
+        <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 18px;">🤖</span>
+          <span><strong>Desenvolvido com o auxílio do Gemini 3.8</strong> (Google DeepMind)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 18px;">💡</span>
+          <span><strong>Idealizado por</strong> <a href="https://lucianosb.com.br" target="_blank" rel="noopener noreferrer" style="color: #facc15; font-weight: 700; text-decoration: underline;">@lucianosb</a></span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary close-modal-btn" style="width: 100%;">
+        Fechar
       </button>
     </div>
   </div>

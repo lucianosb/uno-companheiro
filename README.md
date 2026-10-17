@@ -2,7 +2,8 @@
 
 Uma versão web jogável, interativa e bem-humorada do UNO inspirada no Presidente Lula e na política brasileira contemporânea, com design fiel ao baralho físico e todas as cartas e regras personalizadas implementadas!
 
-> 🤖 **Desenvolvido com o auxílio do Gemini 3.8 (Google DeepMind)**.
+> 🤖 **Desenvolvido com o auxílio do Gemini 3.8 (Google DeepMind)**.  
+> 💡 **Idealizado por [@lucianosb](https://lucianosb.com.br)**.
 
 ---
 

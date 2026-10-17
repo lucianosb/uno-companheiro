@@ -33,11 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const fazOLModal = document.getElementById('faz-o-l-modal');
   const sigiloModal = document.getElementById('sigilo-modal');
   const rulesModal = document.getElementById('rules-modal');
+  const aboutModal = document.getElementById('about-modal');
   const winModal = document.getElementById('win-modal');
 
   // Controls
   const btnMute = document.getElementById('btn-mute');
   const btnRules = document.getElementById('btn-rules');
+  const btnAbout = document.getElementById('btn-about');
   const btnRestart = document.getElementById('btn-restart');
   const btnDraw = document.getElementById('btn-draw-card');
   const btnPass = document.getElementById('btn-pass-turn');
@@ -77,6 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
     btnRules.addEventListener('click', () => {
       openModal(rulesModal);
     });
+
+    // About modal
+    if (btnAbout) {
+      btnAbout.addEventListener('click', () => {
+        openModal(aboutModal);
+      });
+    }
 
     document.querySelectorAll('.close-modal-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
