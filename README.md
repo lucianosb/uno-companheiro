@@ -32,9 +32,9 @@ Para uma jogabilidade ágil e sem depender apenas do mouse, você pode usar os s
 
 | Tecla | Ação | Descrição |
 | :---: | :--- | :--- |
-| <kbd>C</kbd> | **Gritar COMPANHEIRO!** | Anuncia que você ficou com apenas 1 carta restante. |
-| <kbd>N</kbd> | **Passar a Vez** | Passa o turno para o próximo companheiro caso não possa jogar. |
-| <kbd>M</kbd> *(ou Espaço)* | **Comprar Carta** | Compra uma carta da pilha de compras. |
+| <kbd>C</kbd> | **Gritar COMPANHEIRO!** | Anuncia quando você estiver com exatamente 1 carta restante. |
+| <kbd>N</kbd> | **Passar a Vez** | Passa o turno somente quando não houver carta jogável na sua mão. |
+| <kbd>M</kbd> *(ou Espaço)* | **Comprar Carta** | Compra no máximo 1 carta por turno. |
 | <kbd>L</kbd> | **FAZ O L!** | Dispara o gesto no evento rápido (*Quick-Time Event*). |
 | <kbd>F</kbd> | **Fiscalizar** | Penaliza adversários que esqueceram de gritar *"COMPANHEIRO!"*. |
 | <kbd>Esc</kbd> | **Fechar Modais** | Fecha telas de regras, sigilo quebrado e seleção. |

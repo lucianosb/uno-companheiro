@@ -10,6 +10,7 @@ class UnoGame {
     this.deck = [];
     this.discardPile = [];
     this.currentTurn = 0;
+    this.hasDrawnThisTurn = false;
     this.direction = 1; // 1 = clockwise, -1 = counter-clockwise
     this.currentColor = null;
     this.currentCard = null;
@@ -102,6 +103,7 @@ class UnoGame {
     this.direction = 1;
     this.turnHistory = [];
     this.unoShouted = { 0: false, 1: false, 2: false, 3: false };
+    this.hasDrawnThisTurn = false;
     
     // Reset hands
     this.players.forEach(p => p.hand = []);
@@ -531,9 +533,11 @@ class UnoGame {
   drawCard(playerIndex) {
     if (this.isGameOver) return null;
     if (playerIndex !== this.currentTurn) return null;
+    if (this.hasDrawnThisTurn) return null;
 
     const player = this.players[playerIndex];
     const drawn = this.drawCardFromDeck();
+    this.hasDrawnThisTurn = true;
     player.hand.push(drawn);
 
     if (window.soundManager) window.soundManager.playDrawCard();
@@ -547,6 +551,7 @@ class UnoGame {
   passTurn(playerIndex) {
     if (this.isGameOver) return;
     if (playerIndex !== this.currentTurn) return;
+    if (this.getPlayableCards(playerIndex).length > 0) return;
     this.logAction(`⏭️ ${this.players[playerIndex].name} passou a vez.`);
     this.advanceTurn();
   }
@@ -556,10 +561,12 @@ class UnoGame {
    */
   shoutCompanheiro(playerIndex) {
     const player = this.players[playerIndex];
+    if (this.isGameOver || !player || player.hand.length !== 1 || this.unoShouted[playerIndex]) return false;
     this.unoShouted[playerIndex] = true;
     this.logAction(`📢 ${player.name} bradou: "COMPANHEIRO!"`);
     if (window.soundManager) window.soundManager.playCompanheiroShout();
     this.notifyState();
+    return true;
   }
 
   /**
@@ -590,6 +597,7 @@ class UnoGame {
     const n = this.players.length;
     this.currentTurn = (this.currentTurn + this.direction * steps) % n;
     if (this.currentTurn < 0) this.currentTurn += n;
+    this.hasDrawnThisTurn = false;
 
     this.notifyState();
 
@@ -640,13 +648,6 @@ class UnoGame {
         chosenCard = playable[0];
       }
 
-      // Check if bot shouts "Companheiro" if hand will become 1
-      if (bot.hand.length === 2 && Math.random() < 0.9) {
-        this.unoShouted[bot.id] = true;
-        this.logAction(`📢 ${bot.name} gritou: "COMPANHEIRO!"`);
-        if (window.soundManager) window.soundManager.playCompanheiroShout();
-      }
-
       this.playCard(bot.id, chosenCard.id);
     } else {
       // Must draw
@@ -690,6 +691,7 @@ class UnoGame {
     this.onStateChange({
       players: this.players,
       currentTurn: this.currentTurn,
+      hasDrawnThisTurn: this.hasDrawnThisTurn,
       currentCard: this.currentCard,
       currentColor: this.currentColor,
       direction: this.direction,

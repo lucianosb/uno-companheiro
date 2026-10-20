@@ -1,0 +1,3266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#120904">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>UNO COMPANHEIRO - Mobile</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23dc2626'/><polygon points='50,15 61,38 86,38 66,54 73,78 50,64 27,78 34,54 14,38 39,38' fill='%23facc15'/></svg>">
+  <style>
+/* ===== RESET & BASE ===== */
+:root {
+  --pt-red: #dc2626;
+  --pt-red-dark: #991b1b;
+  --uno-yellow: #facc15;
+  --uno-yellow-dark: #ca8a04;
+  --brazil-green: #16a34a;
+  --brazil-blue: #0284c7;
+  --wood-bg-1: #3b2210;
+  --wood-bg-2: #241407;
+  --table-border: #522d14;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: radial-gradient(circle at center, #422615 0%, #221309 80%, #120904 100%);
+  color: #f8fafc;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  touch-action: manipulation;
+}
+
+/* Prevent double-tap zoom */
+button, .player-card-item, .deck-pile {
+  touch-action: manipulation;
+}
+
+/* ===== TOP BAR ===== */
+.top-bar {
+  background: rgba(18, 9, 4, 0.92);
+  border-bottom: 2px solid #5a3217;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+  position: relative;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.logo-badge {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  padding: 4px 10px;
+  border-radius: 16px;
+  border: 2px solid #facc15;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.logo-title {
+  font-family: 'Arial Black', Impact, sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  font-style: italic;
+  color: #fef08a;
+  text-shadow: 1px 1px 0 #991b1b, 2px 2px 0 #000;
+  letter-spacing: 0.3px;
+}
+
+.hamburger-btn {
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 20px;
+  width: 40px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.hamburger-btn:active {
+  background: #475569;
+  transform: scale(0.95);
+}
+
+/* Slide-down menu */
+.slide-menu {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  background: rgba(18, 9, 4, 0.97);
+  border-bottom: 2px solid #5a3217;
+  padding: 0;
+  z-index: 99;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.slide-menu.open {
+  max-height: 220px;
+  padding: 10px 12px;
+}
+
+.slide-menu .menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: #334155;
+  color: #fff;
+  border: 1px solid #475569;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.slide-menu .menu-btn:last-child { margin-bottom: 0; }
+
+.slide-menu .menu-btn:active {
+  background: #475569;
+  transform: scale(0.98);
+}
+
+.slide-menu .menu-btn.btn-warning {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  color: #1c1917;
+  border-color: #facc15;
+}
+
+/* ===== GAME LAYOUT ===== */
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 48px);
+  height: calc(100dvh - 48px);
+  overflow: hidden;
+}
+
+/* ===== OPPONENTS SECTION ===== */
+.opponents-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 8px 4px;
+  flex-shrink: 0;
+}
+
+.opponent-row {
+  background: rgba(30, 20, 15, 0.8);
+  border: 2px solid #5a3217;
+  border-radius: 10px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.opponent-row.active-turn {
+  border-color: #facc15;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.5), inset 0 0 8px rgba(250, 204, 21, 0.15);
+}
+
+.opp-avatar {
+  font-size: 22px;
+  background: #3b2210;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ca8a04;
+  flex-shrink: 0;
+}
+
+.opp-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.opp-name {
+  font-weight: 700;
+  font-size: 12px;
+  color: #fef08a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.opp-role {
+  font-size: 10px;
+  color: #a1a1aa;
+}
+
+.cards-badge {
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid #facc15;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.cards-badge.danger {
+  background: #ef4444;
+  animation: badgePulse 1s infinite alternate;
+}
+
+@keyframes badgePulse {
+  0% { box-shadow: 0 0 4px #ef4444; }
+  100% { box-shadow: 0 0 12px #ef4444; }
+}
+
+/* Speech toast overlay */
+.speech-toast {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: #fef08a;
+  color: #1c1917;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 2px solid #ca8a04;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  max-width: 85vw;
+  text-align: center;
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.speech-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== CENTER BOARD ===== */
+.center-board {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 6px 12px;
+  position: relative;
+  min-height: 0;
+}
+
+.deck-pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.deck-pile:active .pile-card-wrapper {
+  transform: scale(0.96);
+}
+
+.deck-pile.disabled {
+  cursor: default;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.pile-card-wrapper {
+  position: relative;
+  width: 80px;
+  height: 120px;
+  transition: transform 0.15s ease;
+}
+
+.pile-card-wrapper .stack-effect {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background: #000;
+  opacity: 0.35;
+  z-index: -1;
+}
+
+.pile-card-wrapper .stack-layer {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  z-index: 1;
+}
+
+.pile-card-wrapper .top-card {
+  position: relative;
+  z-index: 2;
+}
+
+.deck-label {
+  font-size: 10px;
+  color: #cbd5e1;
+  margin-top: 4px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.center-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.active-color-pill {
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid #dc2626;
+}
+
+.color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.direction-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.direction-arrows {
+  font-size: 16px;
+  color: #facc15;
+  display: inline-block;
+  animation: rotatePulse 4s linear infinite;
+}
+
+.direction-arrows.reverse {
+  animation: rotatePulseReverse 4s linear infinite;
+}
+
+@keyframes rotatePulse {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes rotatePulseReverse {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.discard-pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.discard-card-wrapper {
+  width: 100px;
+  height: 150px;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.5));
+  animation: cardPlaySnap 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes cardPlaySnap {
+  0% { transform: scale(1.25) rotate(-15deg); opacity: 0.7; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.discard-label {
+  font-size: 9px;
+  color: #a1a1aa;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* ===== PLAYER'S HAND ===== */
+.player-hand-section {
+  background: rgba(24, 12, 6, 0.9);
+  border-top: 2px solid #5a3217;
+  padding: 6px 0 0;
+  position: relative;
+  flex-shrink: 0;
+  z-index: 20;
+  transition: border-color 0.3s ease;
+}
+
+.player-hand-section.active-turn {
+  border-color: #facc15;
+  box-shadow: 0 -4px 16px rgba(250, 204, 21, 0.35);
+}
+
+.hand-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px 4px;
+}
+
+.user-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #fef08a;
+}
+
+.cards-scroll-container {
+  display: flex;
+  align-items: flex-end;
+  min-height: 138px;
+  padding: 4px 16px 6px;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.cards-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.player-card-item {
+  width: 85px;
+  height: 128px;
+  margin-left: -30px;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  position: relative;
+  transform-origin: bottom center;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+  flex-shrink: 0;
+}
+
+.player-card-item:first-child {
+  margin-left: 0;
+}
+
+.player-card-item.playable {
+  cursor: pointer;
+}
+
+.player-card-item.playable::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  border: 2px solid #facc15;
+  opacity: 0.5;
+  pointer-events: none;
+  animation: pulsePlayable 1.8s infinite;
+}
+
+.player-card-item.playable:active {
+  transform: translateY(-12px) scale(1.06);
+  z-index: 50 !important;
+  filter: drop-shadow(0 8px 16px rgba(250, 204, 21, 0.6));
+}
+
+.player-card-item.not-playable {
+  filter: brightness(0.6) grayscale(25%);
+  cursor: not-allowed;
+}
+
+@keyframes pulsePlayable {
+  0% { opacity: 0.3; box-shadow: 0 0 2px #facc15; }
+  50% { opacity: 0.8; box-shadow: 0 0 8px #facc15; }
+  100% { opacity: 0.3; box-shadow: 0 0 2px #facc15; }
+}
+
+/* ===== ACTION BUTTONS BAR ===== */
+.action-bar {
+  display: flex;
+  gap: 4px;
+  padding: 6px 6px calc(6px + var(--safe-bottom));
+  background: rgba(12, 6, 3, 0.95);
+  border-top: 1px solid #3b2210;
+  flex-shrink: 0;
+}
+
+.action-bar .act-btn {
+  flex: 1;
+  background: #334155;
+  color: #fff;
+  border: 1px solid #475569;
+  padding: 8px 4px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.15s ease;
+  line-height: 1.2;
+}
+
+.action-bar .act-btn .act-icon {
+  font-size: 18px;
+}
+
+.action-bar .act-btn:active {
+  transform: scale(0.94);
+  background: #475569;
+}
+
+.action-bar .act-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.action-bar .act-btn.btn-primary {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border-color: #ef4444;
+}
+
+.action-bar .act-btn.btn-primary:active {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.action-bar .act-btn.btn-warning {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  color: #1c1917;
+  border-color: #facc15;
+}
+
+.action-bar .act-btn.btn-warning:active {
+  background: linear-gradient(135deg, #facc15, #eab308);
+}
+
+.action-bar .act-btn.hidden {
+  display: none;
+}
+
+/* ===== TOAST NOTIFICATION ===== */
+.action-toast {
+  position: fixed;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(18, 9, 4, 0.95);
+  border: 2px solid #5a3217;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fef08a;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+  z-index: 95;
+  max-width: 90vw;
+  text-align: center;
+  animation: slideToast 0.3s ease;
+  display: none;
+}
+
+@keyframes slideToast {
+  0% { transform: translateX(-50%) translateY(12px); opacity: 0; }
+  100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ===== MODALS ===== */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  padding: 12px;
+}
+
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  background: #18181b;
+  border: 2px solid #5a3217;
+  border-radius: 16px;
+  padding: 18px 16px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+  transform: scale(0.92);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-backdrop.open .modal-card {
+  transform: scale(1);
+}
+
+.modal-title {
+  font-family: 'Arial Black', Impact, sans-serif;
+  font-size: 20px;
+  color: #fef08a;
+  margin-bottom: 10px;
+}
+
+.modal-desc {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* Btn inside modals */
+.btn {
+  background: #334155;
+  color: #ffffff;
+  border: 1px solid #475569;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  transition: all 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.96);
+  background: #475569;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border-color: #ef4444;
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  color: #1c1917;
+  border-color: #facc15;
+}
+
+/* Color Picker Grid */
+.color-picker-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0 auto 16px;
+}
+
+.color-choice-btn {
+  height: 64px;
+  border-radius: 12px;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 15px;
+  color: #ffffff;
+  border: 3px solid #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  min-height: 44px;
+  transition: transform 0.15s ease;
+}
+
+.color-choice-btn:active {
+  transform: scale(1.05);
+}
+
+.choice-red { background: #dc2626; }
+.choice-blue { background: #0284c7; }
+.choice-green { background: #16a34a; }
+.choice-yellow { background: #eab308; color: #1c1917; }
+
+/* Faz o L QTE */
+.faz-o-l-modal {
+  background: radial-gradient(circle, #991b1b 0%, #18181b 80%) !important;
+}
+
+.faz-o-l-hero-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: 5px solid #facc15;
+  border-radius: 50%;
+  width: 130px;
+  height: 130px;
+  margin: 14px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Arial Black', Impact, sans-serif;
+  font-size: 18px;
+  color: #fef08a;
+  cursor: pointer;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+  animation: heroPulse 0.8s infinite alternate;
+  min-height: 44px;
+}
+
+@keyframes heroPulse {
+  0% { transform: scale(1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.7); }
+  100% { transform: scale(1.08); box-shadow: 0 0 40px rgba(250, 204, 21, 0.9); }
+}
+
+.faz-o-l-ranking {
+  margin-top: 12px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: left;
+}
+
+.ranking-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+}
+
+.ranking-item:last-child { border-bottom: none; }
+
+.ranking-item.slowest {
+  color: #f87171;
+  font-weight: 700;
+  background: rgba(220, 38, 38, 0.2);
+  border-radius: 6px;
+}
+
+/* Sigilo Modal */
+.sigilo-targets-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.sigilo-target-card {
+  background: #27272a;
+  border: 2px solid #52525b;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.15s ease;
+  min-height: 44px;
+}
+
+.sigilo-target-card:active {
+  transform: scale(0.98);
+}
+
+.sigilo-target-card.selected {
+  border-color: #facc15;
+  background: rgba(234, 179, 8, 0.15);
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+}
+
+.spy-cards-preview {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.spy-cards-preview::-webkit-scrollbar { display: none; }
+
+/* Sigilo color buttons */
+.sigilo-color-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+
+.sigilo-color-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid transparent;
+  min-height: 44px;
+  transition: all 0.15s ease;
+}
+
+.sigilo-color-btn:active { transform: scale(0.95); }
+.sigilo-color-btn.selected-color { border-color: #fff; outline: 2px solid #fff; }
+
+/* Rules Modal */
+.rules-scrollable {
+  max-height: 55vh;
+  overflow-y: auto;
+  text-align: left;
+  padding-right: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.rule-card-item {
+  display: flex;
+  gap: 10px;
+  background: #27272a;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border-left: 3px solid #dc2626;
+}
+
+.rule-card-img {
+  width: 50px;
+  height: 75px;
+  flex-shrink: 0;
+}
+
+.rule-content h4 {
+  color: #fef08a;
+  margin-bottom: 3px;
+  font-size: 13px;
+}
+
+.rule-content p {
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+
+.rule-content .rule-quote {
+  font-style: italic;
+  color: #94a3b8;
+  font-size: 10px;
+  margin-top: 3px;
+}
+  </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<header class="top-bar">
+  <div class="logo-badge">
+    <span style="font-size: 16px;">⭐</span>
+    <span class="logo-title">UNO COMPANHEIRO</span>
+  </div>
+  <button id="hamburger-btn" class="hamburger-btn" aria-label="Menu">☰</button>
+</header>
+
+<!-- Slide-down Menu -->
+<div id="slide-menu" class="slide-menu">
+  <button id="menu-rules" class="menu-btn">📜 Regras</button>
+  <button id="menu-about" class="menu-btn">ℹ️ Sobre</button>
+  <button id="menu-mute" class="menu-btn">🔊 Som On</button>
+  <button id="menu-restart" class="menu-btn btn-warning">🔄 Novo Jogo</button>
+</div>
+
+<!-- Game Layout -->
+<main class="game-layout">
+
+  <!-- Opponents Strip -->
+  <section class="opponents-strip">
+    <div id="opp-1" class="opponent-row">
+      <div class="opp-avatar">📚</div>
+      <div class="opp-info">
+        <div class="opp-name">Haddad</div>
+        <div class="opp-role">Ministro das Cartas</div>
+      </div>
+      <div id="opp-1-badge" class="cards-badge">7 cartas</div>
+    </div>
+    <div id="opp-2" class="opponent-row">
+      <div class="opp-avatar">🥣</div>
+      <div class="opp-info">
+        <div class="opp-name">Alckmin</div>
+        <div class="opp-role">Vice-Presidente</div>
+      </div>
+      <div id="opp-2-badge" class="cards-badge">7 cartas</div>
+    </div>
+    <div id="opp-3" class="opponent-row">
+      <div class="opp-avatar">✨</div>
+      <div class="opp-info">
+        <div class="opp-name">Janja</div>
+        <div class="opp-role">Primeira-Dama</div>
+      </div>
+      <div id="opp-3-badge" class="cards-badge">7 cartas</div>
+    </div>
+  </section>
+
+  <!-- Speech Toast -->
+  <div id="speech-toast" class="speech-toast"></div>
+
+  <!-- Center Board -->
+  <section class="center-board">
+    <!-- Draw Deck -->
+    <div id="deck-pile" class="deck-pile">
+      <div class="pile-card-wrapper">
+        <div class="stack-effect"></div>
+        <div class="stack-layer"></div>
+        <div id="top-deck-card" class="top-card"></div>
+      </div>
+      <span class="deck-label">COMPRAR</span>
+    </div>
+
+    <!-- Center Status -->
+    <div class="center-info">
+      <div id="active-color-pill" class="active-color-pill">
+        <span id="color-dot" class="color-dot" style="background-color: #dc2626;"></span>
+        <span id="color-name-text">Vermelho</span>
+      </div>
+      <div class="direction-indicator">
+        <span id="direction-arrows" class="direction-arrows">🔄</span>
+        <span id="direction-text">Horário</span>
+      </div>
+    </div>
+
+    <!-- Discard Pile -->
+    <div class="discard-pile">
+      <div id="discard-card" class="discard-card-wrapper"></div>
+      <span class="discard-label">MESA</span>
+    </div>
+  </section>
+
+  <!-- Player Hand -->
+  <section id="player-hand-section" class="player-hand-section">
+    <div class="hand-header">
+      <div class="user-title">
+        <span style="font-size: 18px;">🧑</span>
+        <span>Companheiro(a)</span>
+        <span id="user-card-count" class="cards-badge" style="background: #2563eb;">7 cartas</span>
+      </div>
+    </div>
+    <div id="user-cards-container" class="cards-scroll-container"></div>
+  </section>
+
+  <!-- Action Buttons Bar -->
+  <div class="action-bar">
+    <button id="btn-draw" class="act-btn">
+      <span class="act-icon">📥</span>
+      <span>Comprar</span>
+    </button>
+    <button id="btn-pass" class="act-btn hidden">
+      <span class="act-icon">⏭️</span>
+      <span>Passar</span>
+    </button>
+    <button id="btn-companheiro" class="act-btn btn-primary">
+      <span class="act-icon">📢</span>
+      <span>COMPA!</span>
+    </button>
+    <button id="btn-challenge" class="act-btn btn-warning">
+      <span class="act-icon">⚖️</span>
+      <span>Fiscalizar</span>
+    </button>
+  </div>
+</main>
+
+<!-- Toast Notification -->
+<div id="action-toast" class="action-toast"></div>
+
+<!-- MODAL: Color Picker -->
+<div id="color-picker-modal" class="modal-backdrop">
+  <div class="modal-card">
+    <h2 class="modal-title">ESCOLHA A COR</h2>
+    <p class="modal-desc">Defina a nova cor que governará as próximas rodadas:</p>
+    <div class="color-picker-grid">
+      <button class="color-choice-btn choice-red" data-color="red">🔴 Vermelho</button>
+      <button class="color-choice-btn choice-blue" data-color="blue">🔵 Azul</button>
+      <button class="color-choice-btn choice-yellow" data-color="yellow">🟡 Amarelo</button>
+      <button class="color-choice-btn choice-green" data-color="green">🟢 Verde</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Faz o L QTE -->
+<div id="faz-o-l-modal" class="modal-backdrop faz-o-l-modal">
+  <div class="modal-card" style="border: 3px solid #facc15;">
+    <h2 class="modal-title" style="color: #fef08a; font-size: 24px;">🤟 FAZ O L! 🤟</h2>
+    <p class="modal-desc" style="font-size: 13px; color: #fef08a;">
+      Ação rápida! Todos devem fazer o sinal do "L"!<br>
+      <strong>O ÚLTIMO COMPRA 2 CARTAS!</strong>
+    </p>
+    <div style="font-size: 16px; color: #fff; font-weight: 700; margin-bottom: 6px;">
+      Tempo: <span id="faz-o-l-timer" style="color: #facc15; font-family: monospace; font-size: 20px;">0.000s</span>
+    </div>
+    <button id="btn-faz-o-l-action" class="faz-o-l-hero-btn">
+      <span style="font-size: 32px;">🤟</span>
+      <span>FAZ O L!</span>
+    </button>
+    <div class="faz-o-l-ranking">
+      <div style="font-weight: 700; font-size: 11px; color: #facc15; margin-bottom: 4px; text-transform: uppercase;">
+        Tempo de Reação:
+      </div>
+      <div id="faz-o-l-ranking-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Sigilo Quebrado -->
+<div id="sigilo-modal" class="modal-backdrop">
+  <div class="modal-card" style="text-align: left;">
+    <h2 class="modal-title" style="text-align: center;">📂 SIGILO QUEBRADO</h2>
+    <p class="modal-desc" style="text-align: center;">Escolha um companheiro para espiar e trocar de mão:</p>
+    <div id="sigilo-targets-container" class="sigilo-targets-grid"></div>
+    <div style="margin: 10px 0 4px;">
+      <span style="font-weight: 700; color: #fef08a; font-size: 12px;">Cartas do Oponente:</span>
+    </div>
+    <div id="sigilo-spy-cards" class="spy-cards-preview"></div>
+    <div style="margin: 12px 0 6px; text-align: center;">
+      <span style="font-weight: 700; color: #fef08a; font-size: 12px;">Nova cor da mesa:</span>
+    </div>
+    <div class="sigilo-color-row">
+      <button class="sigilo-color-btn selected-color" data-color="red" style="background: #dc2626; color: #fff;">Vermelho</button>
+      <button class="sigilo-color-btn" data-color="blue" style="background: #0284c7; color: #fff;">Azul</button>
+      <button class="sigilo-color-btn" data-color="yellow" style="background: #eab308; color: #1c1917;">Amarelo</button>
+      <button class="sigilo-color-btn" data-color="green" style="background: #16a34a; color: #fff;">Verde</button>
+    </div>
+    <button id="btn-confirm-sigilo" class="btn btn-warning" style="margin-top: 12px; width: 100%;">
+      Confirmar Troca de Mão!
+    </button>
+  </div>
+</div>
+
+<!-- MODAL: Rules -->
+<div id="rules-modal" class="modal-backdrop">
+  <div class="modal-card">
+    <h2 class="modal-title">REGRAS</h2>
+    <p class="modal-desc">Regulamento oficial com cartas especiais:</p>
+    <div id="rules-list-container" class="rules-scrollable"></div>
+    <button class="btn btn-primary close-modal-btn" style="margin-top: 12px; width: 100%;">Entendido!</button>
+  </div>
+</div>
+
+<!-- MODAL: About -->
+<div id="about-modal" class="modal-backdrop">
+  <div class="modal-card">
+    <div style="font-size: 38px; margin-bottom: 6px;">🎴</div>
+    <h2 class="modal-title" style="margin-bottom: 4px;">UNO COMPANHEIRO</h2>
+    <div style="font-size: 12px; color: #fef08a; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">Edição Especial Lula — Mobile</div>
+    <p class="modal-desc" style="font-size: 13px; line-height: 1.5;">
+      Versão web jogável e interativa do UNO inspirada no Presidente Lula e na política brasileira contemporânea!
+    </p>
+    <div style="background: rgba(0,0,0,0.4); border: 1px solid #5a3217; border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 12px; color: #e2e8f0; text-align: left; line-height: 1.6;">
+      <div style="margin-bottom: 6px;">🤖 <strong>Desenvolvido com o auxílio do Gemini 3.8</strong> (Google DeepMind)</div>
+      <div>💡 <strong>Idealizado por</strong> <a href="https://lucianosb.com.br" target="_blank" rel="noopener noreferrer" style="color: #facc15; font-weight: 700;">@lucianosb</a></div>
+    </div>
+    <button class="btn btn-primary close-modal-btn" style="width: 100%;">Fechar</button>
+  </div>
+</div>
+
+<!-- MODAL: Win -->
+<div id="win-modal" class="modal-backdrop">
+  <div class="modal-card">
+    <div id="win-avatar" style="font-size: 50px; margin-bottom: 8px;">🏆</div>
+    <h2 id="win-title" class="modal-title">FIM DE JOGO!</h2>
+    <p id="win-text" class="modal-desc" style="font-size: 14px;"></p>
+    <button id="btn-play-again" class="btn btn-warning" style="width: 100%; margin-top: 8px;">Jogar Outra Partida!</button>
+  </div>
+</div>
+
+<!-- ===== INLINE SCRIPTS ===== -->
+<script>
+/**
+ * UNO COMPANHEIRO - Card Definitions and Vector SVG Generator
+ * Faithfully recreating the design shown in the physical game deck.
+ */
+
+const CardColors = {
+  RED: 'red',
+  BLUE: 'blue',
+  GREEN: 'green',
+  YELLOW: 'yellow',
+  WILD: 'wild'
+};
+
+const ColorHex = {
+  red: '#dc2626',
+  blue: '#0284c7',
+  green: '#16a34a',
+  yellow: '#eab308',
+  wild: '#18181b'
+};
+
+const ColorNamesPt = {
+  red: 'Vermelho',
+  blue: 'Azul',
+  green: 'Verde',
+  yellow: 'Amarelo',
+  wild: 'Coringa'
+};
+
+const CardTypes = {
+  NUMBER: 'number',
+  STAR_13: 'star_13',
+  REVERSE: 'reverse',
+  SKIP: 'skip',
+  DRAW_TWO: 'draw_two',
+  WILD_DRAW_FOUR: 'wild_draw_four',
+  WILD_FAZ_O_L: 'wild_faz_o_l',
+  WILD_SIGILO: 'wild_sigilo'
+};
+
+class CardRenderer {
+  static renderSVG(card, options = {}) {
+    const width = options.width || 240;
+    const height = options.height || 360;
+    const isBack = options.isBack || false;
+
+    if (isBack) {
+      return CardRenderer.renderCardBackSVG(width, height);
+    }
+
+    const colorHex = ColorHex[card.color] || ColorHex.wild;
+    const cornerSymbol = CardRenderer.getCornerSymbol(card);
+    const cornerSymbolBottom = CardRenderer.getCornerSymbolBottom(card);
+    const centerIllustration = CardRenderer.getCenterIllustration(card);
+    const headerBanner = CardRenderer.getHeaderBanner(card);
+
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 360" width="${width}" height="${height}" class="uno-card-svg">
+        <defs>
+          <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.3"/>
+          </filter>
+          <filter id="inner-glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+          <linearGradient id="gold-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#fef08a" />
+            <stop offset="50%" stop-color="#eab308" />
+            <stop offset="100%" stop-color="#ca8a04" />
+          </linearGradient>
+          <linearGradient id="beer-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fde047" />
+            <stop offset="70%" stop-color="#f59e0b" />
+            <stop offset="100%" stop-color="#d97706" />
+          </linearGradient>
+          <linearGradient id="meat-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#991b1b" />
+            <stop offset="40%" stop-color="#7f1d1d" />
+            <stop offset="80%" stop-color="#581c1c" />
+            <stop offset="100%" stop-color="#450a0a" />
+          </linearGradient>
+        </defs>
+        <rect x="4" y="4" width="232" height="352" rx="20" fill="#ffffff" stroke="#d4d4d8" stroke-width="2"/>
+        <rect x="12" y="12" width="216" height="336" rx="14" fill="${colorHex}" />
+        <ellipse cx="120" cy="180" rx="90" ry="142" transform="rotate(-26 120 180)" fill="#ffffff" />
+        ${headerBanner}
+        <g transform="translate(18, 20)">
+          ${cornerSymbol}
+        </g>
+        <g id="center-art">
+          ${centerIllustration}
+        </g>
+        <g transform="translate(222, 340) rotate(180)">
+          ${cornerSymbolBottom}
+        </g>
+      </svg>
+    `.trim();
+  }
+
+  static renderCardBackSVG(width = 240, height = 360) {
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 360" width="${width}" height="${height}" class="uno-card-svg card-back">
+        <defs>
+          <linearGradient id="back-red-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ef4444" />
+            <stop offset="50%" stop-color="#dc2626" />
+            <stop offset="100%" stop-color="#991b1b" />
+          </linearGradient>
+        </defs>
+        <rect x="4" y="4" width="232" height="352" rx="20" fill="#ffffff" stroke="#e4e4e7" stroke-width="2"/>
+        <rect x="12" y="12" width="216" height="336" rx="14" fill="#18181b"/>
+        <ellipse cx="120" cy="180" rx="88" ry="140" transform="rotate(-28 120 180)" fill="url(#back-red-grad)" stroke="#facc15" stroke-width="4"/>
+        <polygon points="120,248 124,258 135,258 126,265 129,275 120,269 111,275 114,265 105,258 116,258" fill="#facc15" stroke="#ca8a04" stroke-width="1.5" />
+        <g transform="translate(120, 162) rotate(-16)">
+          <text x="5" y="8" font-family="'Arial Black', Impact, sans-serif" font-size="78" font-weight="900" font-style="italic" fill="#000000" text-anchor="middle">UNO</text>
+          <text x="3" y="4" font-family="'Arial Black', Impact, sans-serif" font-size="78" font-weight="900" font-style="italic" fill="#991b1b" text-anchor="middle">UNO</text>
+          <text x="0" y="0" font-family="'Arial Black', Impact, sans-serif" font-size="78" font-weight="900" font-style="italic" fill="#facc15" stroke="#ffffff" stroke-width="7" stroke-linejoin="round" text-anchor="middle">UNO</text>
+          <text x="0" y="0" font-family="'Arial Black', Impact, sans-serif" font-size="78" font-weight="900" font-style="italic" fill="#fef08a" stroke="#ca8a04" stroke-width="2" stroke-linejoin="round" text-anchor="middle">UNO</text>
+          <text x="0" y="38" font-family="'Arial Black', Impact, sans-serif" font-size="16" font-weight="900" letter-spacing="1.5" fill="#facc15" stroke="#000000" stroke-width="3" stroke-linejoin="round" text-anchor="middle">COMPANHEIRO</text>
+          <text x="0" y="38" font-family="'Arial Black', Impact, sans-serif" font-size="16" font-weight="900" letter-spacing="1.5" fill="#fef08a" text-anchor="middle">COMPANHEIRO</text>
+        </g>
+      </svg>
+    `.trim();
+  }
+
+  static getHeaderBanner(card) {
+    if (card.type === CardTypes.DRAW_TWO) {
+      return `
+        <g transform="translate(132, 30)">
+          <rect x="-68" y="-12" width="136" height="22" rx="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+          <text font-family="'Arial Black', Impact, sans-serif" font-size="10" font-weight="900" fill="#ffffff" text-anchor="middle" y="3.5" letter-spacing="0.5">
+            PICANHA E CERVEJINHA
+          </text>
+        </g>
+      `;
+    }
+    if (card.type === CardTypes.REVERSE) {
+      return `
+        <g transform="translate(132, 30)">
+          <rect x="-82" y="-12" width="164" height="22" rx="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+          <text font-family="'Arial Black', Impact, sans-serif" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle" y="3" letter-spacing="0.2">
+            COMPANHEIRAS E COMPANHEIROS!
+          </text>
+        </g>
+      `;
+    }
+    if (card.type === CardTypes.SKIP) {
+      return `
+        <g transform="translate(132, 30)">
+          <rect x="-62" y="-12" width="124" height="22" rx="5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5"/>
+          <text font-family="'Arial Black', Impact, sans-serif" font-size="10.5" font-weight="900" fill="#ffffff" text-anchor="middle" y="3.5" letter-spacing="0.5">
+            RECESSO DA MESA
+          </text>
+        </g>
+      `;
+    }
+    if (card.type === CardTypes.WILD_DRAW_FOUR) {
+      return `
+        <g transform="translate(134, 30)">
+          <rect x="-56" y="-12" width="112" height="22" rx="5" fill="#18181b" stroke="#ffffff" stroke-width="1.5"/>
+          <text font-family="'Arial Black', Impact, sans-serif" font-size="10.5" font-weight="900" fill="#ffffff" text-anchor="middle" y="3.5" letter-spacing="0.5">
+            BOLSA FAMÍLIA
+          </text>
+        </g>
+      `;
+    }
+    if (card.type === CardTypes.WILD_FAZ_O_L) {
+      return `
+        <g transform="translate(134, 30)">
+          <rect x="-48" y="-13" width="96" height="24" rx="6" fill="#18181b" stroke="#facc15" stroke-width="2"/>
+          <text font-family="'Arial Black', Impact, sans-serif" font-size="14" font-weight="900" fill="#facc15" text-anchor="middle" y="4" letter-spacing="0.5">
+            FAZ O L!
+          </text>
+        </g>
+      `;
+    }
+    if (card.type === CardTypes.WILD_SIGILO) {
+      return `
+        <g transform="translate(132, 30)">
+          <rect x="-64" y="-13" width="128" height="24" rx="6" fill="#18181b" stroke="#facc15" stroke-width="2"/>
+          <text font-family="'Arial Black', Impact, sans-serif" font-size="11" font-weight="900" fill="#facc15" text-anchor="middle" y="3.5" letter-spacing="0.5">
+            SIGILO QUEBRADO
+          </text>
+        </g>
+      `;
+    }
+    return '';
+  }
+
+  static getCornerSymbol(card) {
+    switch (card.type) {
+      case CardTypes.NUMBER:
+        return `
+          <text x="6" y="24" font-family="'Arial Black', Impact, sans-serif" font-size="34" font-weight="900" fill="#ffffff" stroke="#000000" stroke-width="4" stroke-linejoin="round">${card.value}</text>
+          <text x="6" y="24" font-family="'Arial Black', Impact, sans-serif" font-size="34" font-weight="900" fill="#ffffff">${card.value}</text>
+        `;
+      case CardTypes.STAR_13:
+        return `
+          <text x="4" y="24" font-family="'Arial Black', Impact, sans-serif" font-size="30" font-weight="900" fill="#ffffff" stroke="#000000" stroke-width="4" stroke-linejoin="round">13</text>
+          <text x="4" y="24" font-family="'Arial Black', Impact, sans-serif" font-size="30" font-weight="900" fill="#ffffff">13</text>
+        `;
+      case CardTypes.DRAW_TWO:
+        return `
+          <text x="4" y="26" font-family="'Arial Black', Impact, sans-serif" font-size="30" font-weight="900" fill="#ffffff" stroke="#000000" stroke-width="4" stroke-linejoin="round">+2</text>
+          <text x="4" y="26" font-family="'Arial Black', Impact, sans-serif" font-size="30" font-weight="900" fill="#ffffff">+2</text>
+        `;
+      case CardTypes.REVERSE:
+        return `
+          <g transform="translate(6, 4) scale(0.9)">
+            <path d="M4,10 L16,2 L16,7 L26,7 C29,7 31,9 31,12 L31,16 L27,16 L27,12 C27,11 26,10 25,10 L16,10 L16,15 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+            <path d="M28,18 L16,26 L16,21 L6,21 C3,21 1,19 1,16 L1,12 L5,12 L5,16 C5,17 6,18 7,18 L16,18 L16,13 Z" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+          </g>
+        `;
+      case CardTypes.SKIP:
+        return `
+          <g transform="translate(6, 6)">
+            <circle cx="14" cy="14" r="14" fill="none" stroke="#ffffff" stroke-width="5"/>
+            <circle cx="14" cy="14" r="14" fill="none" stroke="#000000" stroke-width="1.5"/>
+            <line x1="4" y1="24" x2="24" y2="4" stroke="#ffffff" stroke-width="5"/>
+            <line x1="4" y1="24" x2="24" y2="4" stroke="#000000" stroke-width="1.5"/>
+          </g>
+        `;
+      case CardTypes.WILD_DRAW_FOUR:
+        return `
+          <text x="4" y="26" font-family="'Arial Black', Impact, sans-serif" font-size="30" font-weight="900" fill="#ffffff" stroke="#000000" stroke-width="4" stroke-linejoin="round">+4</text>
+          <text x="4" y="26" font-family="'Arial Black', Impact, sans-serif" font-size="30" font-weight="900" fill="#ffffff">+4</text>
+        `;
+      case CardTypes.WILD_FAZ_O_L:
+      case CardTypes.WILD_SIGILO:
+        return CardRenderer.renderFourColorBadge(14, 16);
+      default:
+        return '';
+    }
+  }
+
+  static getCornerSymbolBottom(card) {
+    if (card.type === CardTypes.WILD_DRAW_FOUR) {
+      return `
+        <text x="4" y="26" font-family="'Arial Black', Impact, sans-serif" font-size="30" font-weight="900" fill="#ffffff" stroke="#000000" stroke-width="4" stroke-linejoin="round">+4</text>
+        <text x="4" y="26" font-family="'Arial Black', Impact, sans-serif" font-size="30" font-weight="900" fill="#ffffff">+4</text>
+      `;
+    }
+    if (card.type === CardTypes.WILD_FAZ_O_L || card.type === CardTypes.WILD_SIGILO) {
+      return CardRenderer.renderFourColorBadge(14, 16);
+    }
+    return CardRenderer.getCornerSymbol(card);
+  }
+
+  static renderFourColorBadge(cx, cy) {
+    return `
+      <g transform="translate(${cx - 14}, ${cy - 18})">
+        <ellipse cx="14" cy="18" rx="14" ry="18" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+        <clipPath id="oval-clip-${cx}-${cy}">
+          <ellipse cx="14" cy="18" rx="13" ry="17"/>
+        </clipPath>
+        <g clip-path="url(#oval-clip-${cx}-${cy})">
+          <rect x="0" y="0" width="14" height="18" fill="#dc2626"/>
+          <rect x="14" y="0" width="14" height="18" fill="#0284c7"/>
+          <rect x="0" y="18" width="14" height="18" fill="#eab308"/>
+          <rect x="14" y="18" width="14" height="18" fill="#16a34a"/>
+          <line x1="0" y1="18" x2="28" y2="18" stroke="#18181b" stroke-width="1.5"/>
+          <line x1="14" y1="0" x2="14" y2="36" stroke="#18181b" stroke-width="1.5"/>
+        </g>
+      </g>
+    `;
+  }
+
+  static getCenterIllustration(card) {
+    switch (card.type) {
+      case CardTypes.NUMBER:
+        return CardRenderer.renderNumberIllustration(card.value, card.color);
+      case CardTypes.STAR_13:
+        return CardRenderer.renderStar13Illustration();
+      case CardTypes.DRAW_TWO:
+        return CardRenderer.renderPicanhaCervejaIllustration();
+      case CardTypes.REVERSE:
+        return CardRenderer.renderLulaDiscursoIllustration();
+      case CardTypes.SKIP:
+        return CardRenderer.renderRecessoMesaIllustration();
+      case CardTypes.WILD_DRAW_FOUR:
+        return CardRenderer.renderBolsaFamiliaIllustration();
+      case CardTypes.WILD_FAZ_O_L:
+        return CardRenderer.renderFazOLIllustration();
+      case CardTypes.WILD_SIGILO:
+        return CardRenderer.renderSigiloQuebradoIllustration();
+      default:
+        return '';
+    }
+  }
+
+  static renderNumberIllustration(num, color) {
+    const cHex = ColorHex[color] || '#dc2626';
+    return `
+      <g transform="translate(120, 195) rotate(-10)">
+        <text x="5" y="8" font-family="'Arial Black', Impact, sans-serif" font-size="120" font-weight="900" font-style="italic" fill="#18181b" text-anchor="middle">${num}</text>
+        <text x="0" y="0" font-family="'Arial Black', Impact, sans-serif" font-size="120" font-weight="900" font-style="italic" fill="${cHex}" stroke="#ffffff" stroke-width="14" stroke-linejoin="round" text-anchor="middle">${num}</text>
+        <text x="0" y="0" font-family="'Arial Black', Impact, sans-serif" font-size="120" font-weight="900" font-style="italic" fill="${cHex}" text-anchor="middle">${num}</text>
+      </g>
+    `;
+  }
+
+  static renderStar13Illustration() {
+    return `
+      <g transform="translate(120, 185)">
+        <polygon points="0,-72 22,-22 75,-16 35,21 47,73 0,46 -47,73 -35,21 -75,-16 -22,-22" fill="#991b1b" transform="translate(3, 4)" />
+        <polygon points="0,-72 22,-22 75,-16 35,21 47,73 0,46 -47,73 -35,21 -75,-16 -22,-22" fill="#dc2626" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+        <polygon points="0,-72 22,-22 75,-16 35,21 47,73 0,46 -47,73 -35,21 -75,-16 -22,-22" fill="#dc2626" stroke="#18181b" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M0,-72 L0,46 L47,73 Z" fill="#b91c1c" opacity="0.4" />
+        <path d="M0,46 L75,-16 L22,-22 Z" fill="#b91c1c" opacity="0.3" />
+      </g>
+    `;
+  }
+
+  static renderPicanhaCervejaIllustration() {
+    return `
+      <g transform="translate(112, 185) scale(0.92)">
+        <g id="grill" transform="translate(-65, -10)">
+          <rect x="0" y="10" width="130" height="75" rx="8" fill="#27272a" stroke="#09090b" stroke-width="3"/>
+          <line x1="8" y1="75" x2="35" y2="10" stroke="#52525b" stroke-width="4"/>
+          <line x1="28" y1="75" x2="55" y2="10" stroke="#52525b" stroke-width="4"/>
+          <line x1="48" y1="75" x2="75" y2="10" stroke="#52525b" stroke-width="4"/>
+          <line x1="68" y1="75" x2="95" y2="10" stroke="#52525b" stroke-width="4"/>
+          <line x1="88" y1="75" x2="115" y2="10" stroke="#52525b" stroke-width="4"/>
+          <line x1="108" y1="75" x2="125" y2="35" stroke="#52525b" stroke-width="4"/>
+        </g>
+        <g id="picanha" transform="translate(-62, -2)">
+          <path d="M12,50 C10,32 25,20 48,20 C72,20 98,28 108,44 C100,42 75,32 45,34 C25,35 15,44 12,50 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/>
+          <path d="M15,48 C28,34 68,32 105,42 C115,58 102,76 80,78 C52,80 22,76 12,58 C10,54 12,50 15,48 Z" fill="url(#meat-grad)" stroke="#18181b" stroke-width="2.5"/>
+          <line x1="30" y1="38" x2="48" y2="72" stroke="#18181b" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="50" y1="36" x2="68" y2="74" stroke="#18181b" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="70" y1="38" x2="88" y2="72" stroke="#18181b" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="44" y1="70" x2="72" y2="40" stroke="#18181b" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+          <line x1="25" y1="60" x2="52" y2="38" stroke="#18181b" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+        </g>
+        <g id="beer-glass" transform="translate(38, -60)">
+          <path d="M5,25 L12,95 C13,99 18,102 26,102 C34,102 39,99 40,95 L47,25 Z" fill="url(#beer-grad)" stroke="#18181b" stroke-width="2.5"/>
+          <line x1="18" y1="30" x2="22" y2="92" stroke="#ffffff" stroke-width="3.5" opacity="0.6" stroke-linecap="round"/>
+          <line x1="34" y1="30" x2="31" y2="92" stroke="#d97706" stroke-width="2.5" opacity="0.6"/>
+          <circle cx="22" cy="75" r="2" fill="#ffffff" opacity="0.7"/>
+          <circle cx="28" cy="62" r="1.5" fill="#ffffff" opacity="0.8"/>
+          <circle cx="18" cy="48" r="2.5" fill="#ffffff" opacity="0.6"/>
+          <circle cx="34" cy="42" r="1.5" fill="#ffffff" opacity="0.7"/>
+          <path d="M1,26 C-2,18 6,10 14,13 C18,7 27,6 32,11 C38,7 48,11 49,18 C54,22 51,28 47,28 C40,29 10,29 1,26 Z" fill="#ffffff" stroke="#18181b" stroke-width="2.5"/>
+          <path d="M47,25 C50,34 48,42 46,46 C44,48 41,45 42,38 Z" fill="#ffffff" stroke="#18181b" stroke-width="1.5"/>
+          <path d="M47,38 C60,40 60,70 42,75" fill="none" stroke="#18181b" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M47,38 C58,40 58,70 42,75" fill="none" stroke="#fde047" stroke-width="2" stroke-linecap="round"/>
+        </g>
+      </g>
+    `;
+  }
+
+  static renderLulaDiscursoIllustration() {
+    return `
+      <g transform="translate(120, 185) scale(0.96)">
+        <g id="lula-speaker" transform="translate(0, -45)">
+          <path d="M-40,65 Q-25,28 0,28 Q25,28 40,65 Z" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+          <polygon points="0,28 -12,50 12,50" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+          <rect x="-10" y="16" width="20" height="15" fill="#fcd2b0"/>
+          <ellipse cx="0" cy="6" rx="22" ry="24" fill="#fcd2b0"/>
+          <ellipse cx="-23" cy="6" rx="4" ry="7" fill="#fcd2b0"/>
+          <ellipse cx="23" cy="6" rx="4" ry="7" fill="#fcd2b0"/>
+          <path d="M-24,-4 C-26,-22 -14,-28 0,-28 C14,-28 26,-22 24,-4 C21,-12 10,-20 0,-20 C-10,-20 -21,-12 -24,-4 Z" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+          <path d="M-23,-2 C-26,6 -23,14 -19,16" stroke="#cbd5e1" stroke-width="2.5" fill="none"/>
+          <path d="M23,-2 C26,6 23,14 19,16" stroke="#cbd5e1" stroke-width="2.5" fill="none"/>
+          <path d="M-19,8 C-18,28 -10,33 0,33 C10,33 18,28 19,8 C14,14 6,17 0,17 C-6,17 -14,14 -19,8 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+          <path d="M-12,14 Q0,10 12,14 Q0,18 -12,14 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+          <path d="M-6,21 Q0,26 6,21" stroke="#881337" stroke-width="2" fill="none"/>
+          <path d="M-14,3 Q-9,0 -4,3" stroke="#0f172a" stroke-width="2.5" fill="none"/>
+          <path d="M4,3 Q9,0 14,3" stroke="#0f172a" stroke-width="2.5" fill="none"/>
+          <path d="M-16,-3 Q-10,-7 -3,-4" stroke="#94a3b8" stroke-width="2" fill="none"/>
+          <path d="M3,-4 Q10,-7 16,-3" stroke="#94a3b8" stroke-width="2" fill="none"/>
+          <path d="M-2,6 Q0,10 3,9" stroke="#ea580c" stroke-width="1.5" fill="none"/>
+        </g>
+        <g id="hands" transform="translate(0, -5)">
+          <ellipse cx="-42" cy="18" rx="7" ry="11" transform="rotate(-30 -42 18)" fill="#fcd2b0" stroke="#0f172a" stroke-width="1.5"/>
+          <ellipse cx="42" cy="18" rx="7" ry="11" transform="rotate(30 42 18)" fill="#fcd2b0" stroke="#0f172a" stroke-width="1.5"/>
+        </g>
+        <g id="podium" transform="translate(0, 15)">
+          <polygon points="-52,0 52,0 44,14 -44,14" fill="#a16207" stroke="#451a03" stroke-width="2.5"/>
+          <polygon points="-42,14 42,14 36,65 -36,65" fill="#854d0e" stroke="#451a03" stroke-width="2.5"/>
+          <polygon points="-28,20 28,20 23,58 -23,58" fill="#713f12" stroke="#451a03" stroke-width="1.5"/>
+          <g id="microphones">
+            <path d="M-36,2 Q-32,-22 -16,-18" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+            <rect x="-17" y="-23" width="9" height="6" rx="2" transform="rotate(20 -13 -20)" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
+            <path d="M36,2 Q32,-22 16,-18" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+            <rect x="8" y="-23" width="9" height="6" rx="2" transform="rotate(-20 13 -20)" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
+          </g>
+        </g>
+      </g>
+    `;
+  }
+
+  static renderRecessoMesaIllustration() {
+    return `
+      <g transform="translate(120, 185) scale(0.95)">
+        <g id="blue-chair" transform="translate(0, -42)">
+          <path d="M-32,50 L-32,8 C-32,-18 -18,-28 0,-28 C18,-28 32,-18 32,8 L32,50 Z" fill="#1e40af" stroke="#0f172a" stroke-width="2.5"/>
+          <path d="M-24,45 L-24,10 C-24,-12 -14,-20 0,-20 C14,-20 24,-12 24,10 L24,45 Z" fill="#2563eb"/>
+          <line x1="-15" y1="5" x2="15" y2="5" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <line x1="-18" y1="22" x2="18" y2="22" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <line x1="-20" y1="38" x2="20" y2="38" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <line x1="0" y1="-15" x2="0" y2="45" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <circle cx="0" cy="5" r="2.5" fill="#172554"/>
+          <circle cx="-10" cy="22" r="2.5" fill="#172554"/>
+          <circle cx="10" cy="22" r="2.5" fill="#172554"/>
+          <circle cx="0" cy="38" r="2.5" fill="#172554"/>
+        </g>
+        <g id="desk" transform="translate(0, 16)">
+          <polygon points="-62,0 62,0 55,14 -55,14" fill="#92400e" stroke="#451a03" stroke-width="2.5"/>
+          <polygon points="-52,14 52,14 46,65 -46,65" fill="#78350f" stroke="#451a03" stroke-width="2.5"/>
+          <polygon points="-38,20 38,20 34,58 -34,58" fill="#5c2b09" stroke="#451a03" stroke-width="1.5"/>
+          <g transform="translate(0, 39)">
+            <circle cx="0" cy="0" r="14" fill="#0284c7" stroke="#facc15" stroke-width="2"/>
+            <polygon points="0,-10 3,-3 10,-3 5,2 7,8 0,4 -7,8 -5,2 -10,-3 -3,-3" fill="#facc15"/>
+            <circle cx="0" cy="0" r="11" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="2,2"/>
+          </g>
+          <line x1="-42" y1="14" x2="-38" y2="65" stroke="#451a03" stroke-width="2"/>
+          <line x1="42" y1="14" x2="38" y2="65" stroke="#451a03" stroke-width="2"/>
+        </g>
+      </g>
+    `;
+  }
+
+  static renderBolsaFamiliaIllustration() {
+    return `
+      <g transform="translate(120, 185) scale(0.95)">
+        <g transform="translate(-48, -48)">
+          <rect x="0" y="0" width="46" height="46" rx="8" fill="#0284c7" stroke="#0f172a" stroke-width="2"/>
+          <circle cx="23" cy="18" r="8" fill="#fcd2b0"/>
+          <path d="M15,14 C15,8 31,8 31,14 Z" fill="#1e293b"/>
+          <path d="M10,40 C10,30 36,30 36,40 Z" fill="#1e293b"/>
+        </g>
+        <g transform="translate(2, -48)">
+          <rect x="0" y="0" width="46" height="46" rx="8" fill="#eab308" stroke="#0f172a" stroke-width="2"/>
+          <circle cx="20" cy="20" r="7" fill="#fcd2b0"/>
+          <path d="M14,17 C14,10 26,10 26,17 Z" fill="#713f12"/>
+          <path d="M9,42 C9,34 31,34 31,42 Z" fill="#15803d"/>
+          <line x1="28" y1="34" x2="38" y2="20" stroke="#fcd2b0" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="39" cy="19" r="3" fill="#fcd2b0"/>
+        </g>
+        <g transform="translate(-48, 2)">
+          <rect x="0" y="0" width="46" height="46" rx="8" fill="#f97316" stroke="#0f172a" stroke-width="2"/>
+          <circle cx="23" cy="18" r="8" fill="#fcd2b0"/>
+          <path d="M13,20 C13,10 33,10 33,20 C34,28 31,32 30,34 L16,34 C15,32 12,28 13,20 Z" fill="#1e293b"/>
+          <path d="M10,44 C10,34 36,34 36,44 Z" fill="#0284c7"/>
+        </g>
+        <g transform="translate(2, 2)">
+          <rect x="0" y="0" width="46" height="46" rx="8" fill="#dc2626" stroke="#0f172a" stroke-width="2"/>
+          <circle cx="20" cy="18" r="8" fill="#fcd2b0"/>
+          <path d="M13,15 C13,8 27,8 27,15" stroke="#f1f5f9" stroke-width="3" fill="none"/>
+          <path d="M16,21 C18,24 22,24 24,21" stroke="#f1f5f9" stroke-width="2" fill="none"/>
+          <path d="M8,44 C8,34 32,34 32,44 Z" fill="#b91c1c"/>
+          <circle cx="33" cy="30" r="5" fill="#fcd2b0"/>
+          <path d="M28,42 C28,37 38,37 38,42 Z" fill="#eab308"/>
+        </g>
+      </g>
+    `;
+  }
+
+  static renderFazOLIllustration() {
+    return `
+      <g transform="translate(120, 185) scale(0.96)">
+        <g id="flag-circle">
+          <circle cx="0" cy="0" r="66" fill="#18181b" stroke="#facc15" stroke-width="6"/>
+          <clipPath id="circle-clip-l">
+            <circle cx="0" cy="0" r="63"/>
+          </clipPath>
+          <g clip-path="url(#circle-clip-l)">
+            <rect x="-70" y="-70" width="140" height="45" fill="#16a34a"/>
+            <rect x="-70" y="-25" width="140" height="35" fill="#eab308"/>
+            <rect x="0" y="10" width="70" height="60" fill="#0284c7"/>
+            <rect x="-70" y="10" width="70" height="60" fill="#dc2626"/>
+            <path d="M-70,0 Q0,-15 70,5 Q0,5 -70,0" fill="#ffffff" opacity="0.9"/>
+          </g>
+        </g>
+        <g id="lula-faz-l" transform="translate(0, 8)">
+          <path d="M-42,55 Q-25,24 0,24 Q25,24 42,55 Z" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+          <polygon points="0,24 -14,46 14,46" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+          <rect x="-10" y="14" width="20" height="15" fill="#fcd2b0"/>
+          <ellipse cx="6" cy="3" rx="23" ry="25" fill="#fcd2b0"/>
+          <ellipse cx="29" cy="3" rx="4" ry="7" fill="#fcd2b0"/>
+          <path d="M-18,-8 C-18,-24 -3,-30 11,-28 C25,-26 31,-16 29,3 C26,-6 18,-15 6,-15 C-6,-15 -14,-7 -18,-8 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+          <path d="M-11,8 C-10,26 -2,32 8,32 C18,32 25,26 26,8 C21,14 13,17 7,17 C1,17 -7,14 -11,8 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+          <path d="M-5,14 Q6,10 17,14 Q6,18 -5,14 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+          <path d="M0,20 Q7,27 15,20" stroke="#881337" stroke-width="2" fill="none"/>
+          <path d="M2,21 Q7,25 13,21 Z" fill="#ffffff"/>
+          <path d="M-5,3 Q0,-1 5,3" stroke="#0f172a" stroke-width="2.5" fill="none"/>
+          <path d="M12,3 Q17,-1 22,3" stroke="#0f172a" stroke-width="2.5" fill="none"/>
+          <path d="M-6,-3 Q0,-6 6,-3" stroke="#94a3b8" stroke-width="2" fill="none"/>
+          <path d="M11,-3 Q17,-6 23,-3" stroke="#94a3b8" stroke-width="2" fill="none"/>
+          <path d="M4,4 Q7,9 10,8" stroke="#ea580c" stroke-width="1.5" fill="none"/>
+          <g id="l-hand" transform="translate(-24, 0)">
+            <ellipse cx="2" cy="18" rx="10" ry="11" fill="#fcd2b0" stroke="#0f172a" stroke-width="2"/>
+            <path d="M-2,14 Q7,14 7,20 Q7,24 -2,24" fill="#fcd2b0" stroke="#0f172a" stroke-width="1.5"/>
+            <path d="M-2,18 Q7,18 7,24 Q7,28 -2,28" fill="#fcd2b0" stroke="#0f172a" stroke-width="1.5"/>
+            <path d="M0,18 L-18,18 C-22,18 -22,12 -18,12 L0,12 Z" fill="#fcd2b0" stroke="#0f172a" stroke-width="2"/>
+            <circle cx="-19" cy="15" r="3" fill="#fcd2b0"/>
+            <path d="M-1,14 L-1,-16 C-1,-20 6,-20 6,-16 L6,14 Z" fill="#fcd2b0" stroke="#0f172a" stroke-width="2"/>
+            <circle cx="2.5" cy="-17" r="3.5" fill="#fcd2b0"/>
+            <rect x="-4" y="24" width="15" height="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+            <rect x="-6" y="28" width="19" height="18" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
+          </g>
+        </g>
+      </g>
+    `;
+  }
+
+  static renderSigiloQuebradoIllustration() {
+    return `
+      <g transform="translate(120, 185) scale(0.96)">
+        <g id="swap-arrows">
+          <path d="M-42,-25 A50,50 0 0,1 42,-25" fill="none" stroke="#facc15" stroke-width="4.5" stroke-dasharray="8,4"/>
+          <polygon points="48,-25 38,-33 40,-20" fill="#facc15"/>
+          <path d="M42,25 A50,50 0 0,1 -42,25" fill="none" stroke="#facc15" stroke-width="4.5" stroke-dasharray="8,4"/>
+          <polygon points="-48,25 -38,33 -40,20" fill="#facc15"/>
+        </g>
+        <g id="folder" transform="translate(0, 5)">
+          <path d="M-45,25 L-45,-25 L-20,-25 L-12,-17 L45,-17 L45,25 Z" fill="#d97706" stroke="#78350f" stroke-width="2"/>
+          <g transform="translate(0, -6) rotate(-8)">
+            <rect x="-30" y="-32" width="55" height="48" rx="2" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+            <line x1="-22" y1="-24" x2="16" y2="-24" stroke="#64748b" stroke-width="2"/>
+            <line x1="-22" y1="-18" x2="10" y2="-18" stroke="#64748b" stroke-width="2"/>
+            <line x1="-22" y1="-12" x2="18" y2="-12" stroke="#64748b" stroke-width="2"/>
+            <line x1="-22" y1="-6" x2="4" y2="-6" stroke="#64748b" stroke-width="2"/>
+            <g transform="translate(-4, -14) rotate(14)">
+              <rect x="-24" y="-7" width="50" height="14" rx="2" fill="#fee2e2" stroke="#dc2626" stroke-width="2" stroke-dasharray="3,1"/>
+              <text x="1" y="3" font-family="'Arial Black', sans-serif" font-size="6.5" font-weight="900" fill="#dc2626" text-anchor="middle">REVELADO</text>
+            </g>
+          </g>
+          <path d="M-46,28 L-38,-6 L42,-6 L38,28 Z" fill="#f59e0b" stroke="#78350f" stroke-width="2"/>
+          <rect x="-22" y="6" width="44" height="14" rx="2" fill="#fef3c7" stroke="#b45309" stroke-width="1"/>
+          <text x="0" y="16" font-family="'Arial Black', sans-serif" font-size="7" font-weight="900" fill="#78350f" text-anchor="middle">DOC. PÚBLICO</text>
+        </g>
+        <g id="magnifier" transform="translate(24, -15) rotate(35)">
+          <circle cx="0" cy="0" r="14" fill="#67e8f9" fill-opacity="0.3" stroke="#0f172a" stroke-width="3"/>
+          <path d="M-8,-6 Q-4,-10 2,-8" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.8"/>
+          <line x1="11" y1="11" x2="26" y2="26" stroke="#78350f" stroke-width="6" stroke-linecap="round"/>
+          <line x1="11" y1="11" x2="26" y2="26" stroke="#0f172a" stroke-width="1.5" stroke-linecap="round"/>
+        </g>
+      </g>
+    `;
+  }
+}
+</script>
+
+<script>
+/**
+ * UNO COMPANHEIRO - Audio Manager
+ * Synthesizes sound effects using Web Audio API and voice lines using SpeechSynthesis.
+ */
+
+class SoundManager {
+  constructor() {
+    this.ctx = null;
+    this.muted = false;
+    this.speechEnabled = true;
+    this.initialized = false;
+  }
+
+  init() {
+    if (this.initialized) return;
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) {
+        this.ctx = new AudioContext();
+        this.initialized = true;
+      }
+    } catch (e) {
+      console.warn('Web Audio not supported:', e);
+    }
+  }
+
+  ensureContext() {
+    if (!this.initialized) this.init();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+
+  toggleMute() {
+    this.muted = !this.muted;
+    return this.muted;
+  }
+
+  playCardSnap() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(320, t);
+    osc.frequency.exponentialRampToValueAtTime(80, t + 0.08);
+    gain.gain.setValueAtTime(0.25, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.09);
+  }
+
+  playDrawCard() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(180, t);
+    osc.frequency.exponentialRampToValueAtTime(420, t + 0.12);
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.13);
+  }
+
+  playReverseFanfare() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const notes = [261.6, 329.6, 392.0, 523.2];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, t + idx * 0.08);
+      gain.gain.setValueAtTime(0.15, t + idx * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.08 + 0.2);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + idx * 0.08);
+      osc.stop(t + idx * 0.08 + 0.22);
+    });
+    this.speak('Companheiras e companheiros!');
+  }
+
+  playSkipGavel() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(140, t);
+    osc.frequency.exponentialRampToValueAtTime(40, t + 0.18);
+    gain.gain.setValueAtTime(0.4, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.2);
+    this.speak('Recesso da mesa!');
+  }
+
+  playDrawTwoSizzle() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(440, t);
+    osc.frequency.exponentialRampToValueAtTime(880, t + 0.15);
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.26);
+    this.speak('Picanha e cervejinha!');
+  }
+
+  playDrawFourChime() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const notes = [392, 523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t + idx * 0.07);
+      gain.gain.setValueAtTime(0.2, t + idx * 0.07);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.07 + 0.3);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + idx * 0.07);
+      osc.stop(t + idx * 0.07 + 0.35);
+    });
+    this.speak('Bolsa Família!');
+  }
+
+  playFazOLAlert() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(600, t);
+    osc.frequency.linearRampToValueAtTime(900, t + 0.12);
+    osc.frequency.linearRampToValueAtTime(600, t + 0.24);
+    osc.frequency.linearRampToValueAtTime(1000, t + 0.36);
+    gain.gain.setValueAtTime(0.3, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.42);
+    this.speak('Faz o L!');
+  }
+
+  playFazOLSuccess() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, t + idx * 0.06);
+      gain.gain.setValueAtTime(0.25, t + idx * 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.06 + 0.2);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + idx * 0.06);
+      osc.stop(t + idx * 0.06 + 0.25);
+    });
+  }
+
+  playFazOLFail() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, t);
+    osc.frequency.linearRampToValueAtTime(110, t + 0.35);
+    gain.gain.setValueAtTime(0.35, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.38);
+  }
+
+  playSigiloQuebrado() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const notes = [311.13, 370.0, 466.16, 622.25];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t + idx * 0.05);
+      gain.gain.setValueAtTime(0.2, t + idx * 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.05 + 0.4);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + idx * 0.05);
+      osc.stop(t + idx * 0.05 + 0.45);
+    });
+    this.speak('Sigilo quebrado!');
+  }
+
+  playCompanheiroShout() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const notes = [440, 554.37, 659.25, 880];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(freq, t + idx * 0.08);
+      gain.gain.setValueAtTime(0.2, t + idx * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.08 + 0.3);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + idx * 0.08);
+      osc.stop(t + idx * 0.08 + 0.35);
+    });
+    this.speak('Companheiro!');
+  }
+
+  playVictory() {
+    if (this.muted) return;
+    this.ensureContext();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const melody = [
+      { f: 523.25, d: 0.15 },
+      { f: 523.25, d: 0.15 },
+      { f: 523.25, d: 0.15 },
+      { f: 659.25, d: 0.45 },
+      { f: 587.33, d: 0.15 },
+      { f: 659.25, d: 0.15 },
+      { f: 783.99, d: 0.6 }
+    ];
+    let cursor = 0;
+    melody.forEach((item) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(item.f, t + cursor);
+      gain.gain.setValueAtTime(0.3, t + cursor);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + cursor + item.d);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + cursor);
+      osc.stop(t + cursor + item.d + 0.02);
+      cursor += item.d;
+    });
+    this.speak('Vitória dos companheiros!');
+  }
+
+  speak(text) {
+    if (this.muted || !this.speechEnabled) return;
+    try {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'pt-BR';
+        utter.rate = 1.05;
+        utter.pitch = 1.0;
+        window.speechSynthesis.speak(utter);
+      }
+    } catch (e) {
+      // Ignore if speech is blocked
+    }
+  }
+}
+
+window.soundManager = new SoundManager();
+</script>
+
+<script>
+/**
+ * UNO COMPANHEIRO - Game Logic Engine
+ * Implements standard Uno rules plus all custom cards & political satire mechanics.
+ */
+
+class UnoGame {
+  constructor(options = {}) {
+    this.playerCount = options.playerCount || 4;
+    this.players = [];
+    this.deck = [];
+    this.discardPile = [];
+    this.currentTurn = 0;
+    this.hasDrawnThisTurn = false;
+    this.direction = 1;
+    this.currentColor = null;
+    this.currentCard = null;
+    this.isGameOver = false;
+    this.winner = null;
+    
+    this.waitingForColorSelection = false;
+    this.waitingForSigiloSelection = false;
+    this.fazOLActive = false;
+    this.unoShouted = {};
+    this.turnHistory = [];
+    this.onStateChange = options.onStateChange || (() => {});
+    this.onActionLog = options.onActionLog || (() => {});
+    this.onFazOLTrigger = options.onFazOLTrigger || (() => {});
+    this.onSigiloTrigger = options.onSigiloTrigger || (() => {});
+    this.onColorPrompt = options.onColorPrompt || (() => {});
+
+    this.initPlayers();
+  }
+
+  initPlayers() {
+    this.players = [
+      {
+        id: 0,
+        name: 'Companheiro(a)',
+        isHuman: true,
+        hand: [],
+        avatar: '🧑',
+        quote: 'A esperança venceu o medo!',
+        quotes: [
+          'A esperança venceu o medo!',
+          'Trabalhadores e trabalhadoras do baralho, uni-vos!',
+          'Nunca antes na história deste Uno se jogou tão bem!',
+          'Companheirismo e democracia nesta mesa!',
+          'Não há força maior que a união de uma mão vencedora!'
+        ]
+      },
+      {
+        id: 1,
+        name: 'Fernando Haddad',
+        isHuman: false,
+        hand: [],
+        avatar: '📚',
+        quote: 'Ajustando as alíquotas do baralho!',
+        quotes: [
+          'Ajustando as alíquotas do baralho!',
+          'Essa compra de cartas está sujeita ao imposto de importação!',
+          'Déficit zero de cartas na minha mão até o final do ano!',
+          'Reforma tributária nesta mesa: cartas só com nota fiscal!',
+          'Taxando cada descarte com muito amor e responsabilidade fiscal!'
+        ]
+      },
+      {
+        id: 2,
+        name: 'Geraldo Alckmin',
+        isHuman: false,
+        hand: [],
+        avatar: '🥣',
+        quote: 'Com calma e chuchu, a gente vence a mesa.',
+        quotes: [
+          'Com calma e chuchu, a gente vence a mesa.',
+          'Uma aliança ampla e democrática contra a sua vitória!',
+          'Como médico, receito repouso e mais duas cartas para você.',
+          'Sem radicalismos, companheiro: jogada moderada e certeira.',
+          'Dizem que sou insosso, mas no Uno sou pura emoção!'
+        ]
+      },
+      {
+        id: 3,
+        name: 'Janja Lula da Silva',
+        isHuman: false,
+        hand: [],
+        avatar: '✨',
+        quote: 'Companheirismo e alegria em cada jogada!',
+        quotes: [
+          'Companheirismo e alegria em cada jogada!',
+          'A Resistência e a Paris aprovaram esse descarte!',
+          'Subindo a rampa do Uno com muito orgulho e elegância!',
+          'Comprei a gravata do presidente e agora compro a vitória na mesa!',
+          'Festival do Futuro: música boa e cartas voando na oposição!'
+        ]
+      }
+    ];
+  }
+
+  startNewGame() {
+    this.isGameOver = false;
+    this.winner = null;
+    this.direction = 1;
+    this.turnHistory = [];
+    this.unoShouted = { 0: false, 1: false, 2: false, 3: false };
+    this.hasDrawnThisTurn = false;
+    
+    this.players.forEach(p => p.hand = []);
+    
+    this.buildDeck();
+    this.shuffle(this.deck);
+
+    for (let i = 0; i < 7; i++) {
+      for (let p = 0; p < this.players.length; p++) {
+        this.players[p].hand.push(this.drawCardFromDeck());
+      }
+    }
+
+    let firstCard = this.drawCardFromDeck();
+    while (firstCard.color === CardColors.WILD) {
+      this.deck.push(firstCard);
+      this.shuffle(this.deck);
+      firstCard = this.drawCardFromDeck();
+    }
+
+    this.discardPile = [firstCard];
+    this.currentCard = firstCard;
+    this.currentColor = firstCard.color;
+    this.currentTurn = 0;
+
+    this.logAction(`🎲 Jogo iniciado! Carta na mesa: ${this.getCardName(firstCard)} (${ColorNamesPt[firstCard.color]})`);
+    this.notifyState();
+  }
+
+  buildDeck() {
+    this.deck = [];
+    let idCounter = 1;
+    const colors = [CardColors.RED, CardColors.BLUE, CardColors.GREEN, CardColors.YELLOW];
+
+    colors.forEach(color => {
+      this.deck.push({
+        id: idCounter++,
+        color,
+        type: CardTypes.NUMBER,
+        value: 0,
+        name: `0 ${ColorNamesPt[color]}`
+      });
+
+      for (let v = 1; v <= 9; v++) {
+        for (let copy = 0; copy < 2; copy++) {
+          this.deck.push({
+            id: idCounter++,
+            color,
+            type: CardTypes.NUMBER,
+            value: v,
+            name: `${v} ${ColorNamesPt[color]}`
+          });
+        }
+      }
+
+      this.deck.push({
+        id: idCounter++,
+        color,
+        type: CardTypes.STAR_13,
+        value: 13,
+        name: `13 Estrela ${ColorNamesPt[color]}`
+      });
+
+      for (let copy = 0; copy < 2; copy++) {
+        this.deck.push({
+          id: idCounter++,
+          color,
+          type: CardTypes.REVERSE,
+          name: `Companheiras e Companheiros! (${ColorNamesPt[color]})`,
+          desc: 'Inverte o sentido do jogo.'
+        });
+      }
+
+      for (let copy = 0; copy < 2; copy++) {
+        this.deck.push({
+          id: idCounter++,
+          color,
+          type: CardTypes.SKIP,
+          name: `Recesso da Mesa (${ColorNamesPt[color]})`,
+          desc: 'Pula a vez do próximo jogador.'
+        });
+      }
+
+      for (let copy = 0; copy < 2; copy++) {
+        this.deck.push({
+          id: idCounter++,
+          color,
+          type: CardTypes.DRAW_TWO,
+          value: '+2',
+          name: `Picanha e Cervejinha +2 (${ColorNamesPt[color]})`,
+          desc: 'O próximo jogador deve comprar 2 cartas.'
+        });
+      }
+    });
+
+    for (let i = 0; i < 4; i++) {
+      this.deck.push({
+        id: idCounter++,
+        color: CardColors.WILD,
+        type: CardTypes.WILD_DRAW_FOUR,
+        value: '+4',
+        name: 'Bolsa Família (+4)',
+        desc: 'Escolhe a nova cor e faz o próximo comprar 4 cartas.'
+      });
+    }
+
+    for (let i = 0; i < 4; i++) {
+      this.deck.push({
+        id: idCounter++,
+        color: CardColors.WILD,
+        type: CardTypes.WILD_FAZ_O_L,
+        value: 'L',
+        name: 'Faz o L! (Ação Rápida)',
+        desc: 'Todos devem fazer o sinal do "L". O último compra 2 cartas.'
+      });
+    }
+
+    for (let i = 0; i < 4; i++) {
+      this.deck.push({
+        id: idCounter++,
+        color: CardColors.WILD,
+        type: CardTypes.WILD_SIGILO,
+        value: '📂',
+        name: 'Sigilo Quebrado (Troca de Mão)',
+        desc: 'Espiar e trocar de mão com um oponente.'
+      });
+    }
+  }
+
+  shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  drawCardFromDeck() {
+    if (this.deck.length === 0) {
+      if (this.discardPile.length <= 1) {
+        this.buildDeck();
+        this.shuffle(this.deck);
+      } else {
+        const top = this.discardPile.pop();
+        this.deck = this.shuffle(this.discardPile);
+        this.discardPile = [top];
+        this.logAction('🔄 Baralho de compras reembaralhado!');
+      }
+    }
+    return this.deck.pop();
+  }
+
+  isCardPlayable(card) {
+    if (!this.currentCard) return true;
+    if (card.color === CardColors.WILD) return true;
+    if (card.color === this.currentColor) return true;
+    if (card.type === CardTypes.NUMBER && this.currentCard.type === CardTypes.NUMBER) {
+      return card.value === this.currentCard.value;
+    }
+    if (card.type === CardTypes.STAR_13 && (this.currentCard.type === CardTypes.STAR_13 || this.currentCard.value === 13)) {
+      return true;
+    }
+    if (card.type === this.currentCard.type && card.type !== CardTypes.NUMBER) {
+      return true;
+    }
+    return false;
+  }
+
+  getPlayableCards(playerIndex) {
+    const player = this.players[playerIndex];
+    if (!player) return [];
+    return player.hand.filter(card => this.isCardPlayable(card));
+  }
+
+  playCard(playerIndex, cardId, chosenColor = null) {
+    if (this.isGameOver) return false;
+    if (playerIndex !== this.currentTurn) return false;
+
+    const player = this.players[playerIndex];
+    const cardIdx = player.hand.findIndex(c => c.id === cardId);
+    if (cardIdx === -1) return false;
+
+    const card = player.hand[cardIdx];
+    if (!this.isCardPlayable(card)) return false;
+
+    player.hand.splice(cardIdx, 1);
+    this.discardPile.push(card);
+    this.currentCard = card;
+
+    if (window.soundManager) {
+      window.soundManager.playCardSnap();
+    }
+
+    if (player.hand.length === 1) {
+      if (!this.unoShouted[playerIndex]) {
+        if (!player.isHuman && Math.random() < 0.85) {
+          this.unoShouted[playerIndex] = true;
+          this.logAction(`📢 ${player.name} gritou: "COMPANHEIRO!"`);
+          if (window.soundManager) window.soundManager.playCompanheiroShout();
+        }
+      }
+    } else {
+      this.unoShouted[playerIndex] = false;
+    }
+
+    if (player.hand.length === 0) {
+      this.handleGameOver(player);
+      return true;
+    }
+
+    this.resolveCardEffect(player, card, chosenColor);
+    return true;
+  }
+
+  resolveCardEffect(player, card, chosenColor) {
+    switch (card.type) {
+      case CardTypes.NUMBER:
+      case CardTypes.STAR_13:
+        this.currentColor = card.color;
+        this.logAction(`🎴 ${player.name} jogou ${this.getCardName(card)}`);
+        this.advanceTurn();
+        break;
+
+      case CardTypes.REVERSE:
+        this.currentColor = card.color;
+        this.direction *= -1;
+        this.logAction(`🔄 "Companheiras e Companheiros!" jogada por ${player.name}!`);
+        if (window.soundManager) window.soundManager.playReverseFanfare();
+        this.advanceTurn();
+        break;
+
+      case CardTypes.SKIP:
+        this.currentColor = card.color;
+        const skippedPlayer = this.getNextPlayer();
+        this.logAction(`🚫 "Recesso da Mesa"! ${skippedPlayer.name} perde o turno!`);
+        if (window.soundManager) window.soundManager.playSkipGavel();
+        this.advanceTurn(2);
+        break;
+
+      case CardTypes.DRAW_TWO:
+        this.currentColor = card.color;
+        const victimDraw2 = this.getNextPlayer();
+        const c1 = this.drawCardFromDeck();
+        const c2 = this.drawCardFromDeck();
+        victimDraw2.hand.push(c1, c2);
+        this.logAction(`🥩 "Picanha e Cervejinha"! 2 cartas para ${victimDraw2.name}!`);
+        if (window.soundManager) window.soundManager.playDrawTwoSizzle();
+        this.advanceTurn(2);
+        break;
+
+      case CardTypes.WILD_DRAW_FOUR:
+        if (player.isHuman && !chosenColor) {
+          this.waitingForColorSelection = true;
+          this.onColorPrompt(card, (selColor) => {
+            this.waitingForColorSelection = false;
+            this.completeBolsaFamilia(player, selColor);
+          });
+        } else {
+          const selColor = chosenColor || this.selectBestColorForBot(player);
+          this.completeBolsaFamilia(player, selColor);
+        }
+        break;
+
+      case CardTypes.WILD_FAZ_O_L:
+        if (player.isHuman && !chosenColor) {
+          this.waitingForColorSelection = true;
+          this.onColorPrompt(card, (selColor) => {
+            this.waitingForColorSelection = false;
+            this.triggerFazOL(player, selColor);
+          });
+        } else {
+          const selColor = chosenColor || this.selectBestColorForBot(player);
+          this.triggerFazOL(player, selColor);
+        }
+        break;
+
+      case CardTypes.WILD_SIGILO:
+        if (player.isHuman) {
+          this.waitingForSigiloSelection = true;
+          this.onSigiloTrigger(player, (targetPlayerIndex, selColor) => {
+            this.waitingForSigiloSelection = false;
+            this.executeSigiloSwap(player, targetPlayerIndex, selColor);
+          });
+        } else {
+          const target = this.selectBestSigiloTarget(player);
+          const selColor = chosenColor || this.selectBestColorForBot(player);
+          this.executeSigiloSwap(player, target.id, selColor);
+        }
+        break;
+
+      default:
+        this.currentColor = card.color;
+        this.advanceTurn();
+        break;
+    }
+  }
+
+  completeBolsaFamilia(player, chosenColor) {
+    this.currentColor = chosenColor;
+    const victim = this.getNextPlayer();
+    for (let i = 0; i < 4; i++) {
+      victim.hand.push(this.drawCardFromDeck());
+    }
+    this.logAction(`🛍️ "Bolsa Família" por ${player.name}! Cor: ${ColorNamesPt[chosenColor]}. 4 cartas para ${victim.name}!`);
+    if (window.soundManager) window.soundManager.playDrawFourChime();
+    this.advanceTurn(2);
+  }
+
+  triggerFazOL(player, chosenColor) {
+    this.currentColor = chosenColor;
+    this.fazOLActive = true;
+    this.logAction(`🤟 "FAZ O L!" por ${player.name}! Cor: ${ColorNamesPt[chosenColor]}`);
+    if (window.soundManager) window.soundManager.playFazOLAlert();
+
+    this.onFazOLTrigger({
+      initiator: player,
+      onComplete: (slowestPlayerIndex) => {
+        this.fazOLActive = false;
+        const loser = this.players[slowestPlayerIndex];
+        const c1 = this.drawCardFromDeck();
+        const c2 = this.drawCardFromDeck();
+        loser.hand.push(c1, c2);
+        this.logAction(`🚨 ${loser.name} foi o mais lento e comprou 2 cartas!`);
+        this.advanceTurn();
+      }
+    });
+  }
+
+  executeSigiloSwap(player, targetPlayerIndex, chosenColor) {
+    const target = this.players[targetPlayerIndex];
+    if (!target || target.id === player.id) {
+      this.advanceTurn();
+      return;
+    }
+
+    const tempHand = [...player.hand];
+    player.hand = [...target.hand];
+    target.hand = tempHand;
+
+    this.currentColor = chosenColor || this.currentColor || CardColors.RED;
+    this.logAction(`📂 "Sigilo Quebrado"! ${player.name} trocou de mão com ${target.name}!`);
+    if (window.soundManager) window.soundManager.playSigiloQuebrado();
+
+    if (player.hand.length === 1) this.unoShouted[player.id] = false;
+    if (target.hand.length === 1) this.unoShouted[target.id] = false;
+
+    this.advanceTurn();
+  }
+
+  selectBestSigiloTarget(botPlayer) {
+    let bestOpponent = null;
+    let minCards = 999;
+    this.players.forEach(p => {
+      if (p.id !== botPlayer.id) {
+        if (p.hand.length < minCards) {
+          minCards = p.hand.length;
+          bestOpponent = p;
+        }
+      }
+    });
+    return bestOpponent || this.players[0];
+  }
+
+  selectBestColorForBot(botPlayer) {
+    const counts = { [CardColors.RED]: 0, [CardColors.BLUE]: 0, [CardColors.GREEN]: 0, [CardColors.YELLOW]: 0 };
+    botPlayer.hand.forEach(c => {
+      if (c.color !== CardColors.WILD && counts[c.color] !== undefined) {
+        counts[c.color]++;
+      }
+    });
+    let maxC = CardColors.RED;
+    let maxVal = -1;
+    for (const [col, count] of Object.entries(counts)) {
+      if (count > maxVal) {
+        maxVal = count;
+        maxC = col;
+      }
+    }
+    return maxC;
+  }
+
+  drawCard(playerIndex) {
+    if (this.isGameOver) return null;
+    if (playerIndex !== this.currentTurn) return null;
+    if (this.hasDrawnThisTurn) return null;
+
+    const player = this.players[playerIndex];
+    const drawn = this.drawCardFromDeck();
+    this.hasDrawnThisTurn = true;
+    player.hand.push(drawn);
+
+    if (window.soundManager) window.soundManager.playDrawCard();
+    this.logAction(`📥 ${player.name} comprou uma carta.`);
+
+    this.notifyState();
+    return drawn;
+  }
+
+  passTurn(playerIndex) {
+    if (this.isGameOver) return;
+    if (playerIndex !== this.currentTurn) return;
+    if (this.getPlayableCards(playerIndex).length > 0) return;
+    this.logAction(`⏭️ ${this.players[playerIndex].name} passou a vez.`);
+    this.advanceTurn();
+  }
+
+  shoutCompanheiro(playerIndex) {
+    const player = this.players[playerIndex];
+    if (this.isGameOver || !player || player.hand.length !== 1 || this.unoShouted[playerIndex]) return false;
+    this.unoShouted[playerIndex] = true;
+    this.logAction(`📢 ${player.name} bradou: "COMPANHEIRO!"`);
+    if (window.soundManager) window.soundManager.playCompanheiroShout();
+    this.notifyState();
+    return true;
+  }
+
+  challengeCompanheiro(challengerIndex, targetIndex) {
+    const target = this.players[targetIndex];
+    if (target.hand.length === 1 && !this.unoShouted[targetIndex]) {
+      const c1 = this.drawCardFromDeck();
+      const c2 = this.drawCardFromDeck();
+      target.hand.push(c1, c2);
+      this.logAction(`⚖️ Flagrante! ${target.name} esqueceu "COMPANHEIRO!" +2 cartas!`);
+      if (window.soundManager) window.soundManager.playSkipGavel();
+      this.notifyState();
+      return true;
+    }
+    return false;
+  }
+
+  getNextPlayer(steps = 1) {
+    const n = this.players.length;
+    let nextIdx = (this.currentTurn + this.direction * steps) % n;
+    if (nextIdx < 0) nextIdx += n;
+    return this.players[nextIdx];
+  }
+
+  advanceTurn(steps = 1) {
+    const n = this.players.length;
+    this.currentTurn = (this.currentTurn + this.direction * steps) % n;
+    if (this.currentTurn < 0) this.currentTurn += n;
+    this.hasDrawnThisTurn = false;
+
+    this.notifyState();
+
+    if (!this.isGameOver && !this.players[this.currentTurn].isHuman) {
+      setTimeout(() => this.executeBotTurn(), 900 + Math.random() * 500);
+    }
+  }
+
+  executeBotTurn() {
+    if (this.isGameOver) return;
+    const bot = this.players[this.currentTurn];
+    if (bot.isHuman) return;
+
+    const human = this.players[0];
+    if (human.hand.length === 1 && !this.unoShouted[0] && Math.random() < 0.6) {
+      this.challengeCompanheiro(bot.id, 0);
+    }
+
+    const playable = this.getPlayableCards(bot.id);
+
+    if (playable.length > 0) {
+      let chosenCard = null;
+      const nextPlayer = this.getNextPlayer();
+      const nextIsThreat = nextPlayer.hand.length <= 2;
+
+      if (nextIsThreat) {
+        chosenCard = playable.find(c => c.type === CardTypes.WILD_DRAW_FOUR || c.type === CardTypes.DRAW_TWO || c.type === CardTypes.SKIP);
+      }
+
+      if (!chosenCard) {
+        chosenCard = playable.find(c => c.color === this.currentColor && c.color !== CardColors.WILD);
+      }
+
+      if (!chosenCard) {
+        chosenCard = playable.find(c => c.color !== CardColors.WILD);
+      }
+
+      if (!chosenCard) {
+        chosenCard = playable[0];
+      }
+
+      this.playCard(bot.id, chosenCard.id);
+    } else {
+      const drawn = this.drawCard(bot.id);
+      if (drawn && this.isCardPlayable(drawn)) {
+        setTimeout(() => {
+          if (this.currentTurn === bot.id) {
+            this.playCard(bot.id, drawn.id);
+          }
+        }, 500);
+      } else {
+        setTimeout(() => {
+          if (this.currentTurn === bot.id) {
+            this.passTurn(bot.id);
+          }
+        }, 400);
+      }
+    }
+  }
+
+  handleGameOver(winner) {
+    this.isGameOver = true;
+    this.winner = winner;
+    this.logAction(`🏆 FIM DE JOGO! ${winner.name} venceu!`);
+    if (window.soundManager) window.soundManager.playVictory();
+    this.notifyState();
+  }
+
+  getCardName(card) {
+    if (!card) return '';
+    return card.name || `${card.value} ${ColorNamesPt[card.color] || ''}`;
+  }
+
+  logAction(msg) {
+    this.turnHistory.unshift({ text: msg, time: new Date().toLocaleTimeString() });
+    if (this.turnHistory.length > 50) this.turnHistory.pop();
+    this.onActionLog(msg);
+  }
+
+  notifyState() {
+    this.onStateChange({
+      players: this.players,
+      currentTurn: this.currentTurn,
+      hasDrawnThisTurn: this.hasDrawnThisTurn,
+      currentCard: this.currentCard,
+      currentColor: this.currentColor,
+      direction: this.direction,
+      deckCount: this.deck.length,
+      discardCount: this.discardPile.length,
+      isGameOver: this.isGameOver,
+      winner: this.winner,
+      waitingForColorSelection: this.waitingForColorSelection,
+      waitingForSigiloSelection: this.waitingForSigiloSelection,
+      fazOLActive: this.fazOLActive,
+      unoShouted: this.unoShouted
+    });
+  }
+}
+</script>
+
+<script>
+/**
+ * UNO COMPANHEIRO - Mobile Application Controller
+ * Handles touch UI, rendering, modals, and QTE for mobile layout.
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  let game = null;
+  let selectedWildCard = null;
+  let selectedSigiloTarget = 1;
+  let chosenSigiloColor = CardColors.RED;
+  let pendingColorCallback = null;
+
+  // DOM refs
+  const deckPileEl = document.getElementById('deck-pile');
+  const topDeckCard = document.getElementById('top-deck-card');
+  const discardCardEl = document.getElementById('discard-card');
+  const userCardsContainer = document.getElementById('user-cards-container');
+  const userCardCountEl = document.getElementById('user-card-count');
+  const activeColorPill = document.getElementById('active-color-pill');
+  const colorNameText = document.getElementById('color-name-text');
+  const colorDot = document.getElementById('color-dot');
+  const directionArrows = document.getElementById('direction-arrows');
+  const directionText = document.getElementById('direction-text');
+  const speechToast = document.getElementById('speech-toast');
+
+  // Opponent elements
+  const oppRows = {
+    1: document.getElementById('opp-1'),
+    2: document.getElementById('opp-2'),
+    3: document.getElementById('opp-3')
+  };
+  const oppBadges = {
+    1: document.getElementById('opp-1-badge'),
+    2: document.getElementById('opp-2-badge'),
+    3: document.getElementById('opp-3-badge')
+  };
+
+  // Modals
+  const colorModal = document.getElementById('color-picker-modal');
+  const fazOLModal = document.getElementById('faz-o-l-modal');
+  const sigiloModal = document.getElementById('sigilo-modal');
+  const rulesModal = document.getElementById('rules-modal');
+  const aboutModal = document.getElementById('about-modal');
+  const winModal = document.getElementById('win-modal');
+
+  // Buttons
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  const slideMenu = document.getElementById('slide-menu');
+  const menuRules = document.getElementById('menu-rules');
+  const menuAbout = document.getElementById('menu-about');
+  const menuMute = document.getElementById('menu-mute');
+  const menuRestart = document.getElementById('menu-restart');
+  const btnDraw = document.getElementById('btn-draw');
+  const btnPass = document.getElementById('btn-pass');
+  const btnCompanheiro = document.getElementById('btn-companheiro');
+  const btnChallenge = document.getElementById('btn-challenge');
+  const toastNotification = document.getElementById('action-toast');
+
+  // Faz o L
+  const btnFazOL = document.getElementById('btn-faz-o-l-action');
+  const fazOLTimerText = document.getElementById('faz-o-l-timer');
+  const fazOLRankingList = document.getElementById('faz-o-l-ranking-list');
+
+  function init() {
+    game = new UnoGame({
+      onStateChange: renderGameState,
+      onActionLog: showToastNotification,
+      onColorPrompt: handleColorPrompt,
+      onFazOLTrigger: handleFazOLTrigger,
+      onSigiloTrigger: handleSigiloTrigger
+    });
+    window.game = game;
+
+    attachEventListeners();
+    game.startNewGame();
+    populateRulesModal();
+  }
+
+  function attachEventListeners() {
+    // Hamburger menu
+    hamburgerBtn.addEventListener('click', () => {
+      slideMenu.classList.toggle('open');
+    });
+
+    // Close menu on any menu button click
+    const closeMenu = () => slideMenu.classList.remove('open');
+
+    menuRules.addEventListener('click', () => { closeMenu(); openModal(rulesModal); });
+    menuAbout.addEventListener('click', () => { closeMenu(); openModal(aboutModal); });
+    menuMute.addEventListener('click', () => {
+      const isMuted = window.soundManager.toggleMute();
+      menuMute.textContent = isMuted ? '🔇 Som Off' : '🔊 Som On';
+      closeMenu();
+    });
+    menuRestart.addEventListener('click', () => {
+      closeMenu();
+      game.startNewGame();
+    });
+
+    // Close modal buttons
+    document.querySelectorAll('.close-modal-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const modal = e.target.closest('.modal-backdrop');
+        if (modal) closeModal(modal);
+      });
+    });
+
+    // Draw card
+    btnDraw.addEventListener('click', () => {
+      if (game.currentTurn === 0 && !game.isGameOver) {
+        game.drawCard(0);
+      }
+    });
+
+    // Deck pile tap to draw
+    deckPileEl.addEventListener('click', () => {
+      if (game.currentTurn === 0 && !game.isGameOver) {
+        game.drawCard(0);
+      }
+    });
+
+    // Pass turn
+    btnPass.addEventListener('click', () => {
+      if (game.currentTurn === 0 && !game.isGameOver) {
+        game.passTurn(0);
+      }
+    });
+
+    // Shout Companheiro
+    btnCompanheiro.addEventListener('click', () => {
+      if (game.shoutCompanheiro(0)) {
+        showSpeechToast('COMPANHEIRO! É só mais uma pra vitória!');
+      }
+    });
+
+    // Challenge
+    btnChallenge.addEventListener('click', () => {
+      if (!game.isGameOver) {
+        let challenged = false;
+        [1, 2, 3].forEach(botId => {
+          if (!challenged && game.players[botId].hand.length === 1 && !game.unoShouted[botId]) {
+            game.challengeCompanheiro(0, botId);
+            challenged = true;
+          }
+        });
+        if (!challenged) {
+          showToastNotification('Nenhum adversário pendente de fiscalização!');
+        } else {
+          showSpeechToast('Fiscalização atuante!');
+        }
+      }
+    });
+
+    // Color picker buttons
+    document.querySelectorAll('.color-choice-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const color = btn.getAttribute('data-color');
+        closeModal(colorModal);
+        if (pendingColorCallback) {
+          pendingColorCallback(color);
+          pendingColorCallback = null;
+        } else if (selectedWildCard) {
+          game.playCard(0, selectedWildCard.id, color);
+          selectedWildCard = null;
+        }
+      });
+    });
+
+    // Sigilo confirm
+    document.getElementById('btn-confirm-sigilo').addEventListener('click', () => {
+      closeModal(sigiloModal);
+      if (pendingColorCallback) {
+        pendingColorCallback(selectedSigiloTarget, chosenSigiloColor);
+        pendingColorCallback = null;
+      }
+    });
+
+    // Close menus when tapping outside
+    document.addEventListener('click', (e) => {
+      if (slideMenu.classList.contains('open') && !slideMenu.contains(e.target) && e.target !== hamburgerBtn) {
+        slideMenu.classList.remove('open');
+      }
+    });
+  }
+
+  function isAnyModalOpen() {
+    return document.querySelector('.modal-backdrop.open') !== null;
+  }
+
+  function openModal(modal) {
+    if (modal) modal.classList.add('open');
+  }
+
+  function closeModal(modal) {
+    if (modal) modal.classList.remove('open');
+  }
+
+  function showToastNotification(text) {
+    if (!toastNotification) return;
+    toastNotification.textContent = text;
+    toastNotification.style.display = 'block';
+    clearTimeout(toastNotification._timer);
+    toastNotification._timer = setTimeout(() => {
+      toastNotification.style.display = 'none';
+    }, 3500);
+  }
+
+  function showSpeechToast(text) {
+    speechToast.textContent = text;
+    speechToast.classList.add('show');
+    clearTimeout(speechToast._timer);
+    speechToast._timer = setTimeout(() => speechToast.classList.remove('show'), 2800);
+  }
+
+  /**
+   * Render the game state onto the mobile DOM
+   */
+  function renderGameState(state) {
+    // 1. Discard Card
+    if (state.currentCard) {
+      discardCardEl.innerHTML = CardRenderer.renderSVG(state.currentCard, { width: 100, height: 150 });
+    }
+
+    // 2. Deck card back
+    topDeckCard.innerHTML = CardRenderer.renderCardBackSVG(80, 120);
+
+    // 3. Active Color
+    const activeColor = state.currentColor || CardColors.RED;
+    colorDot.style.backgroundColor = ColorHex[activeColor];
+    colorNameText.textContent = ColorNamesPt[activeColor] || 'Vermelho';
+    activeColorPill.style.borderColor = ColorHex[activeColor];
+
+    // 4. Direction
+    if (state.direction === 1) {
+      directionArrows.classList.remove('reverse');
+      directionText.textContent = 'Horário';
+    } else {
+      directionArrows.classList.add('reverse');
+      directionText.textContent = 'Anti-Horário';
+    }
+
+    // 5. Opponents
+    [1, 2, 3].forEach(id => {
+      const row = oppRows[id];
+      const badge = oppBadges[id];
+      const player = state.players[id];
+      if (!row || !player) return;
+
+      if (state.currentTurn === id) {
+        row.classList.add('active-turn');
+      } else {
+        row.classList.remove('active-turn');
+      }
+
+      if (player.hand.length === 1) {
+        badge.textContent = '1 CARTA!';
+        badge.classList.add('danger');
+      } else {
+        badge.textContent = `${player.hand.length} cartas`;
+        badge.classList.remove('danger');
+      }
+
+      // Speech toast on turn
+      if (state.currentTurn === id) {
+        if (row._lastTurnId !== state.currentTurn) {
+          row._lastTurnId = state.currentTurn;
+          const quotes = player.quotes || [player.quote];
+          const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+          showSpeechToast(`${player.avatar} ${player.name.split(' ')[0]}: "${randomQuote}"`);
+        }
+      } else {
+        row._lastTurnId = null;
+      }
+    });
+
+    // 6. Human Hand
+    const user = state.players[0];
+    userCardCountEl.textContent = `${user.hand.length} cartas`;
+    const handSection = document.getElementById('player-hand-section');
+
+    if (state.currentTurn === 0) {
+      handSection.classList.add('active-turn');
+      if (handSection._lastTurnId !== state.currentTurn) {
+        handSection._lastTurnId = state.currentTurn;
+        const quotes = user.quotes || [user.quote];
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        showSpeechToast(`🧑 Sua vez! "${randomQuote}"`);
+      }
+    } else {
+      handSection.classList.remove('active-turn');
+      handSection._lastTurnId = null;
+    }
+
+    // Render cards in scroll container
+    userCardsContainer.innerHTML = '';
+    const handSize = user.hand.length;
+    let overlapMargin = -30;
+    if (handSize > 8) {
+      overlapMargin = Math.max(-52, -30 - (handSize - 8) * 3);
+    } else if (handSize < 4) {
+      overlapMargin = -16;
+    }
+
+    user.hand.forEach((card, index) => {
+      const cardWrapper = document.createElement('div');
+      cardWrapper.className = 'player-card-item';
+      cardWrapper.style.zIndex = index + 1;
+      if (index > 0) {
+        cardWrapper.style.marginLeft = `${overlapMargin}px`;
+      }
+
+      const isPlayable = (state.currentTurn === 0 && game.isCardPlayable(card));
+      if (isPlayable) {
+        cardWrapper.classList.add('playable');
+      } else {
+        cardWrapper.classList.add('not-playable');
+      }
+
+      cardWrapper.innerHTML = CardRenderer.renderSVG(card, { width: 85, height: 128 });
+
+      cardWrapper.addEventListener('click', () => {
+        if (!isPlayable || game.isGameOver) return;
+        handleUserCardClick(card);
+      });
+
+      userCardsContainer.appendChild(cardWrapper);
+    });
+
+    // Button states
+    const hasPlayableCards = game.getPlayableCards(0).length > 0;
+    btnDraw.disabled = state.currentTurn !== 0 || state.hasDrawnThisTurn || state.isGameOver;
+    deckPileEl.classList.toggle('disabled', btnDraw.disabled);
+    if (state.currentTurn === 0 && !hasPlayableCards) {
+      btnPass.classList.remove('hidden');
+    } else {
+      btnPass.classList.add('hidden');
+    }
+    btnCompanheiro.disabled = user.hand.length !== 1 || state.unoShouted[0] || state.isGameOver;
+
+    const hasVulnerable = [1, 2, 3].some(botId => state.players[botId].hand.length === 1 && !state.unoShouted[botId]);
+    btnChallenge.style.opacity = hasVulnerable ? '1' : '0.5';
+
+    // Game Over
+    if (state.isGameOver && state.winner) {
+      showGameOverModal(state.winner);
+    }
+  }
+
+  function handleUserCardClick(card) {
+    if (card.color === CardColors.WILD) {
+      if (card.type === CardTypes.WILD_SIGILO) {
+        game.playCard(0, card.id);
+      } else {
+        selectedWildCard = card;
+        openModal(colorModal);
+      }
+    } else {
+      game.playCard(0, card.id);
+    }
+  }
+
+  function handleColorPrompt(card, callback) {
+    pendingColorCallback = callback;
+    openModal(colorModal);
+  }
+
+  /**
+   * Faz o L QTE
+   */
+  function handleFazOLTrigger({ initiator, onComplete }) {
+    openModal(fazOLModal);
+    fazOLRankingList.innerHTML = '<div style="color: #cbd5e1; text-align: center;">Aguardando...</div>';
+    
+    const startTime = performance.now();
+    let userReacted = false;
+    let userReactionTime = null;
+    let timerInterval = null;
+
+    timerInterval = setInterval(() => {
+      const elapsed = ((performance.now() - startTime) / 1000).toFixed(3);
+      fazOLTimerText.textContent = `${elapsed}s`;
+    }, 20);
+
+    const botTimes = {
+      1: (650 + Math.random() * 700) / 1000,
+      2: (850 + Math.random() * 900) / 1000,
+      3: (450 + Math.random() * 650) / 1000
+    };
+
+    const reactions = [];
+
+    const finishQTE = () => {
+      clearInterval(timerInterval);
+      btnFazOL.disabled = true;
+
+      [1, 2, 3].forEach(botId => {
+        reactions.push({
+          id: botId,
+          name: game.players[botId].name,
+          time: botTimes[botId],
+          isHuman: false
+        });
+      });
+
+      reactions.push({
+        id: 0,
+        name: 'Companheiro(a)',
+        time: userReactionTime || 3.0,
+        isHuman: true
+      });
+
+      reactions.sort((a, b) => a.time - b.time);
+
+      let rankingHTML = '';
+      reactions.forEach((entry, idx) => {
+        const isSlowest = (idx === reactions.length - 1);
+        rankingHTML += `
+          <div class="ranking-item ${isSlowest ? 'slowest' : ''}">
+            <span>${idx + 1}º ${entry.name} ${entry.isHuman ? '👈' : ''}</span>
+            <span><strong>${entry.time.toFixed(3)}s</strong> ${isSlowest ? '🚨 +2' : '✅'}</span>
+          </div>
+        `;
+      });
+      fazOLRankingList.innerHTML = rankingHTML;
+
+      const slowest = reactions[reactions.length - 1];
+
+      if (slowest.id === 0) {
+        if (window.soundManager) window.soundManager.playFazOLFail();
+      } else {
+        if (window.soundManager) window.soundManager.playFazOLSuccess();
+      }
+
+      setTimeout(() => {
+        closeModal(fazOLModal);
+        btnFazOL.disabled = false;
+        btnFazOL.innerHTML = '<span style="font-size: 32px;">🤟</span><span>FAZ O L!</span>';
+        onComplete(slowest.id);
+      }, 3200);
+    };
+
+    btnFazOL.onclick = () => {
+      if (userReacted) return;
+      userReacted = true;
+      userReactionTime = (performance.now() - startTime) / 1000;
+      btnFazOL.style.transform = 'scale(0.95)';
+      btnFazOL.innerHTML = '<span style="font-size: 28px;">🤟</span><span style="font-size:12px">Registrado!</span>';
+      setTimeout(finishQTE, 600);
+    };
+
+    setTimeout(() => {
+      if (!userReacted) {
+        userReactionTime = 2.5;
+        finishQTE();
+      }
+    }, 2500);
+  }
+
+  /**
+   * Sigilo Quebrado
+   */
+  function handleSigiloTrigger(player, callback) {
+    pendingColorCallback = callback;
+    selectedSigiloTarget = 1;
+    chosenSigiloColor = CardColors.RED;
+    openModal(sigiloModal);
+
+    const targetsContainer = document.getElementById('sigilo-targets-container');
+    const spyContainer = document.getElementById('sigilo-spy-cards');
+    targetsContainer.innerHTML = '';
+    spyContainer.innerHTML = '';
+
+    // Reset color buttons
+    document.querySelectorAll('.sigilo-color-btn').forEach(b => b.classList.remove('selected-color'));
+    document.querySelector('.sigilo-color-btn[data-color="red"]').classList.add('selected-color');
+
+    [1, 2, 3].forEach(botId => {
+      const bot = game.players[botId];
+      const cardEl = document.createElement('div');
+      cardEl.className = 'sigilo-target-card';
+      if (botId === selectedSigiloTarget) cardEl.classList.add('selected');
+
+      cardEl.innerHTML = `
+        <div style="font-size: 22px;">${bot.avatar}</div>
+        <div style="flex: 1;">
+          <div style="font-weight: 700; color: #fef08a; font-size: 13px;">${bot.name}</div>
+          <div style="font-size: 11px; color: #94a3b8;">${bot.hand.length} cartas</div>
+        </div>
+        <div class="btn btn-warning" style="font-size: 11px; padding: 6px 10px; min-height: 36px;">Espiar</div>
+      `;
+
+      cardEl.addEventListener('click', () => {
+        document.querySelectorAll('.sigilo-target-card').forEach(c => c.classList.remove('selected'));
+        cardEl.classList.add('selected');
+        selectedSigiloTarget = botId;
+
+        spyContainer.innerHTML = '';
+        bot.hand.forEach(c => {
+          const mini = document.createElement('div');
+          mini.style.width = '50px';
+          mini.style.height = '75px';
+          mini.style.flexShrink = '0';
+          mini.innerHTML = CardRenderer.renderSVG(c, { width: 50, height: 75 });
+          spyContainer.appendChild(mini);
+        });
+      });
+
+      targetsContainer.appendChild(cardEl);
+    });
+
+    // Auto-select first
+    const firstTarget = targetsContainer.querySelector('.sigilo-target-card');
+    if (firstTarget) firstTarget.click();
+
+    // Sigilo color buttons
+    document.querySelectorAll('.sigilo-color-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.sigilo-color-btn').forEach(b => b.classList.remove('selected-color'));
+        btn.classList.add('selected-color');
+        chosenSigiloColor = btn.getAttribute('data-color');
+      };
+    });
+  }
+
+  function showGameOverModal(winner) {
+    openModal(winModal);
+    const winTitle = document.getElementById('win-title');
+    const winText = document.getElementById('win-text');
+    const winAvatar = document.getElementById('win-avatar');
+
+    if (winner.id === 0) {
+      winTitle.textContent = '🎉 VITÓRIA!';
+      winText.textContent = 'Você venceu a mesa com união e companheirismo!';
+      winAvatar.textContent = '🏆';
+    } else {
+      winTitle.textContent = `${winner.name.toUpperCase()} VENCEU!`;
+      const winQuotes = winner.quotes || [winner.quote];
+      const winQuote = winQuotes[Math.floor(Math.random() * winQuotes.length)];
+      winText.textContent = `"${winQuote}"`;
+      winAvatar.textContent = winner.avatar;
+    }
+
+    document.getElementById('btn-play-again').onclick = () => {
+      closeModal(winModal);
+      game.startNewGame();
+    };
+  }
+
+  function populateRulesModal() {
+    const rulesList = document.getElementById('rules-list-container');
+    if (!rulesList) return;
+
+    const customCards = [
+      {
+        card: { type: CardTypes.REVERSE, color: CardColors.RED },
+        title: '🔄 Companheiras e Companheiros!',
+        effect: 'Inverte o sentido do jogo.',
+        desc: 'Muda a direção do discurso!'
+      },
+      {
+        card: { type: CardTypes.SKIP, color: CardColors.BLUE },
+        title: '🚫 Recesso da Mesa',
+        effect: 'Pula a vez do próximo.',
+        desc: 'O colega entra em recesso!'
+      },
+      {
+        card: { type: CardTypes.DRAW_TWO, color: CardColors.RED, value: '+2' },
+        title: '🥩 Picanha e Cervejinha (+2)',
+        effect: 'Próximo compra 2 cartas.',
+        desc: 'Fartura de cartas!'
+      },
+      {
+        card: { type: CardTypes.WILD_DRAW_FOUR, color: CardColors.WILD, value: '+4' },
+        title: '🛍️ Bolsa Família (+4)',
+        effect: 'Escolhe cor + próximo compra 4.',
+        desc: 'Redistribuição!'
+      },
+      {
+        card: { type: CardTypes.WILD_FAZ_O_L, color: CardColors.WILD, value: 'L' },
+        title: '🤟 Faz o L!',
+        effect: 'Todos fazem o "L" rápido! Último compra 2.',
+        desc: 'Ação rápida!'
+      },
+      {
+        card: { type: CardTypes.WILD_SIGILO, color: CardColors.WILD, value: '📂' },
+        title: '📂 Sigilo Quebrado',
+        effect: 'Espie e troque de mão.',
+        desc: 'Tudo às claras!'
+      },
+      {
+        card: { type: CardTypes.STAR_13, color: CardColors.YELLOW, value: 13 },
+        title: '⭐ Carta 13 (Estrela PT)',
+        effect: 'Valor 13 com a Estrela Vermelha.',
+        desc: 'Jogue sobre outra 13 ou mesma cor!'
+      }
+    ];
+
+    let html = '';
+    customCards.forEach(item => {
+      html += `
+        <div class="rule-card-item">
+          <div class="rule-card-img">
+            ${CardRenderer.renderSVG(item.card, { width: 50, height: 75 })}
+          </div>
+          <div class="rule-content">
+            <h4>${item.title}</h4>
+            <p><strong>Efeito:</strong> ${item.effect}</p>
+            <p class="rule-quote">${item.desc}</p>
+          </div>
+        </div>
+      `;
+    });
+
+    rulesList.innerHTML = html;
+  }
+
+  // Initialize audio on first touch
+  document.addEventListener('touchstart', function initAudio() {
+    window.soundManager.init();
+    document.removeEventListener('touchstart', initAudio);
+  }, { once: true });
+
+  document.addEventListener('click', function initAudioClick() {
+    window.soundManager.init();
+    document.removeEventListener('click', initAudioClick);
+  }, { once: true });
+
+  // Start app
+  init();
+});
+</script>
+
+</body>
+</html>

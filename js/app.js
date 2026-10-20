@@ -122,8 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Shout Companheiro
     btnCompanheiro.addEventListener('click', () => {
-      if (!game.isGameOver) {
-        game.shoutCompanheiro(0);
+      if (game.shoutCompanheiro(0)) {
         const userBubble = document.getElementById('user-speech-bubble');
         if (userBubble) {
           userBubble.textContent = 'COMPANHEIRO! É só mais uma pra vitória!';
@@ -203,9 +202,15 @@ document.addEventListener('DOMContentLoaded', () => {
           game.passTurn(0);
         }
       } else if (key === 'c') {
-        if (!isAnyModalOpen()) {
+        if (!isAnyModalOpen() && game.shoutCompanheiro(0)) {
           e.preventDefault();
-          game.shoutCompanheiro(0);
+          const userBubble = document.getElementById('user-speech-bubble');
+          if (userBubble) {
+            userBubble.textContent = 'COMPANHEIRO! É só mais uma pra vitória!';
+            userBubble.classList.add('show');
+            clearTimeout(userBubble._timer);
+            userBubble._timer = setTimeout(() => userBubble.classList.remove('show'), 3200);
+          }
         }
       } else if (key === 'f') {
         if (!isAnyModalOpen()) {
@@ -386,7 +391,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Button states
-    btnPass.style.display = (state.currentTurn === 0) ? 'inline-flex' : 'none';
+    const hasPlayableCards = game.getPlayableCards(0).length > 0;
+    btnDraw.disabled = state.currentTurn !== 0 || state.hasDrawnThisTurn || state.isGameOver;
+    deckPileEl.classList.toggle('disabled', btnDraw.disabled);
+    btnPass.style.display = (state.currentTurn === 0 && !hasPlayableCards) ? 'inline-flex' : 'none';
+    btnCompanheiro.disabled = user.hand.length !== 1 || state.unoShouted[0] || state.isGameOver;
     
     // Check if any opponent is vulnerable to Companheiro challenge
     const hasVulnerable = [1, 2, 3].some(botId => state.players[botId].hand.length === 1 && !state.unoShouted[botId]);
