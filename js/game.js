@@ -326,7 +326,7 @@ class UnoGame {
 
     // Check if player shouted "Companheiro!" when reaching 1 card
     this.unoShouted[playerIndex] = false;
-    if (player.hand.length === 1 && !player.isHuman && Math.random() < 0.85) {
+    if (player.hand.length === 1 && !player.isHuman && Math.random() < 0.7) {
       this.unoShouted[playerIndex] = true;
       this.logAction(`📢 ${player.name} gritou: "COMPANHEIRO!"`);
       if (window.soundManager) window.soundManager.playCompanheiroShout();

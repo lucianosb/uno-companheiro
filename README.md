@@ -16,7 +16,7 @@ Você pode jogar de três formas:
 1. **Direto no Navegador (Offline / Local)**:
    - Dê um duplo clique no arquivo [`index.html`](index.html).
 2. **Online via GitHub Pages**:
-   - Ative o **GitHub Pages** nas configurações do repositório apontando para a branch `main` e raiz `/`. O jogo rodará instantaneamente pelo link público em computadores e celulares.
+   - Ative o **GitHub Pages** nas configurações do repositório apontando para a branch `main` e raiz `/`. O jogo rodará instantaneamente pelo link público em computadores e celulares (celulares são redirecionados automaticamente para a versão em [`mobile/`](mobile/index.html); use `?desktop` na URL para forçar a versão desktop).
 3. **Servidor Local Opcional (Python)**:
    - *Nota:* O Python **não é obrigatório**. Caso você já tenha o Python instalado e prefira servir via HTTP local por costume de desenvolvimento:
      ```bash

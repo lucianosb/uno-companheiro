@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    // Redireciona dispositivos móveis para a versão mobile (use ?desktop para forçar esta versão)
+    (function () {
+      if (/[?&]desktop\b/.test(location.search)) return;
+      var ua = navigator.userAgent || '';
+      var isMobileUA = /Android|iPhone|iPad|iPod|Mobile|Opera Mini|IEMobile/i.test(ua) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (isMobileUA) location.replace('mobile/' + location.hash);
+    })();
+  </script>
   <title>UNO COMPANHEIRO - Edição Especial Lula</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23dc2626'/><polygon points='50,15 61,38 86,38 66,54 73,78 50,64 27,78 34,54 14,38 39,38' fill='%23facc15'/></svg>">
