@@ -325,17 +325,11 @@ class UnoGame {
     }
 
     // Check if player shouted "Companheiro!" when reaching 1 card
-    if (player.hand.length === 1) {
-      if (!this.unoShouted[playerIndex]) {
-        // Penalty check: if bot forgets or human didn't press button
-        if (!player.isHuman && Math.random() < 0.85) {
-          this.unoShouted[playerIndex] = true;
-          this.logAction(`📢 ${player.name} gritou: "COMPANHEIRO!"`);
-          if (window.soundManager) window.soundManager.playCompanheiroShout();
-        }
-      }
-    } else {
-      this.unoShouted[playerIndex] = false;
+    this.unoShouted[playerIndex] = false;
+    if (player.hand.length === 1 && !player.isHuman && Math.random() < 0.85) {
+      this.unoShouted[playerIndex] = true;
+      this.logAction(`📢 ${player.name} gritou: "COMPANHEIRO!"`);
+      if (window.soundManager) window.soundManager.playCompanheiroShout();
     }
 
     // Check Win
@@ -384,6 +378,7 @@ class UnoGame {
         const c1 = this.drawCardFromDeck();
         const c2 = this.drawCardFromDeck();
         victimDraw2.hand.push(c1, c2);
+        if (victimDraw2.hand.length !== 1) this.unoShouted[victimDraw2.id] = false;
         this.logAction(`🥩 "Picanha e Cervejinha"! Fartura de 2 cartas direto para ${victimDraw2.name}! Perde a vez!`);
         if (window.soundManager) window.soundManager.playDrawTwoSizzle();
         this.advanceTurn(2);
@@ -446,6 +441,7 @@ class UnoGame {
     for (let i = 0; i < 4; i++) {
       victim.hand.push(this.drawCardFromDeck());
     }
+    if (victim.hand.length !== 1) this.unoShouted[victim.id] = false;
     this.logAction(`🛍️ "Bolsa Família" ativado por ${player.name}! Nova cor: ${ColorNamesPt[chosenColor]}. Redistribuição de 4 cartas para ${victim.name}, que perde a vez!`);
     if (window.soundManager) window.soundManager.playDrawFourChime();
     this.advanceTurn(2);
@@ -465,6 +461,7 @@ class UnoGame {
         const c1 = this.drawCardFromDeck();
         const c2 = this.drawCardFromDeck();
         loser.hand.push(c1, c2);
+        if (loser.hand.length !== 1) this.unoShouted[loser.id] = false;
         this.logAction(`🚨 ${loser.name} foi o mais lento no "Faz o L!" e comprou 2 cartas!`);
         this.advanceTurn();
       }
@@ -487,9 +484,8 @@ class UnoGame {
     this.logAction(`📂 "Sigilo Quebrado"! ${player.name} espiou e trocou de mão com ${target.name}! Tudo transparente e às claras na mesa!`);
     if (window.soundManager) window.soundManager.playSigiloQuebrado();
 
-    // Check if swapped hand has 1 card
-    if (player.hand.length === 1) this.unoShouted[player.id] = false;
-    if (target.hand.length === 1) this.unoShouted[target.id] = false;
+    this.unoShouted[player.id] = false;
+    this.unoShouted[target.id] = false;
 
     this.advanceTurn();
   }
@@ -539,6 +535,7 @@ class UnoGame {
     const drawn = this.drawCardFromDeck();
     this.hasDrawnThisTurn = true;
     player.hand.push(drawn);
+    if (player.hand.length !== 1) this.unoShouted[playerIndex] = false;
 
     if (window.soundManager) window.soundManager.playDrawCard();
     this.logAction(`📥 ${player.name} comprou uma carta.`);
@@ -578,6 +575,7 @@ class UnoGame {
       const c1 = this.drawCardFromDeck();
       const c2 = this.drawCardFromDeck();
       target.hand.push(c1, c2);
+      if (target.hand.length !== 1) this.unoShouted[targetIndex] = false;
       this.logAction(`⚖️ Flagrante! ${target.name} esqueceu de gritar "COMPANHEIRO!" e comprou 2 cartas de penalidade!`);
       if (window.soundManager) window.soundManager.playSkipGavel();
       this.notifyState();
@@ -614,7 +612,7 @@ class UnoGame {
 
     // Check if bot can call out any human who forgot "Companheiro"
     const human = this.players[0];
-    if (human.hand.length === 1 && !this.unoShouted[0] && Math.random() < 0.6) {
+    if (human.hand.length === 1 && !this.unoShouted[0]) {
       this.challengeCompanheiro(bot.id, 0);
     }
 
