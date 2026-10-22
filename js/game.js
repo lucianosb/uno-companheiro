@@ -601,7 +601,7 @@ class UnoGame {
 
     // If next player is bot, trigger AI turn
     if (!this.isGameOver && !this.players[this.currentTurn].isHuman) {
-      setTimeout(() => this.executeBotTurn(), 900 + Math.random() * 500);
+      setTimeout(() => this.executeBotTurn(), 2500 + Math.random() * 800);
     }
   }
 
@@ -655,13 +655,13 @@ class UnoGame {
           if (this.currentTurn === bot.id) {
             this.playCard(bot.id, drawn.id);
           }
-        }, 500);
+        }, 1200);
       } else {
         setTimeout(() => {
           if (this.currentTurn === bot.id) {
             this.passTurn(bot.id);
           }
-        }, 400);
+        }, 1000);
       }
     }
   }

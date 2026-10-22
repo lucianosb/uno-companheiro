@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
             bubble.textContent = randomQuote;
             bubble.classList.add('show');
             clearTimeout(bubble._timer);
-            bubble._timer = setTimeout(() => bubble.classList.remove('show'), 2800);
+            bubble._timer = setTimeout(() => bubble.classList.remove('show'), 4200);
           }
         } else {
           slot._lastTurnId = null;
@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
         userBubble.textContent = randomQuote;
         userBubble.classList.add('show');
         clearTimeout(userBubble._timer);
-        userBubble._timer = setTimeout(() => userBubble.classList.remove('show'), 3500);
+        userBubble._timer = setTimeout(() => userBubble.classList.remove('show'), 4500);
       }
     } else {
       userSection.classList.remove('active-turn');

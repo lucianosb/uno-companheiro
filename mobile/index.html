@@ -592,7 +592,7 @@ button, .player-card-item, .deck-pile {
 /* ===== TOAST NOTIFICATION ===== */
 .action-toast {
   position: fixed;
-  bottom: 120px;
+  position: absolute; bottom: calc(100% + 8px); width: max-content; pointer-events: none;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(18, 9, 4, 0.95);
@@ -993,6 +993,8 @@ button, .player-card-item, .deck-pile {
 
   <!-- Player Hand -->
   <section id="player-hand-section" class="player-hand-section">
+    <div id="action-toast" class="action-toast"></div>
+    
     <div class="hand-header">
       <div class="user-title">
         <span style="font-size: 18px;">🧑</span>
@@ -1024,8 +1026,8 @@ button, .player-card-item, .deck-pile {
   </div>
 </main>
 
-<!-- Toast Notification -->
-<div id="action-toast" class="action-toast"></div>
+
+
 
 <!-- MODAL: Color Picker -->
 <div id="color-picker-modal" class="modal-backdrop">
@@ -2533,7 +2535,7 @@ class UnoGame {
     this.notifyState();
 
     if (!this.isGameOver && !this.players[this.currentTurn].isHuman) {
-      setTimeout(() => this.executeBotTurn(), 900 + Math.random() * 500);
+      setTimeout(() => this.executeBotTurn(), 2500 + Math.random() * 800);
     }
   }
 
@@ -2578,13 +2580,13 @@ class UnoGame {
           if (this.currentTurn === bot.id) {
             this.playCard(bot.id, drawn.id);
           }
-        }, 500);
+        }, 1200);
       } else {
         setTimeout(() => {
           if (this.currentTurn === bot.id) {
             this.passTurn(bot.id);
           }
-        }, 400);
+        }, 1000);
       }
     }
   }
@@ -2841,7 +2843,7 @@ document.addEventListener('DOMContentLoaded', () => {
     speechToast.textContent = text;
     speechToast.classList.add('show');
     clearTimeout(speechToast._timer);
-    speechToast._timer = setTimeout(() => speechToast.classList.remove('show'), 2800);
+    speechToast._timer = setTimeout(() => speechToast.classList.remove('show'), 4200);
   }
 
   /**
