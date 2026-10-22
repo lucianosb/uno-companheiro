@@ -302,7 +302,7 @@ class SoundManager {
     this.speak('Companheiro!');
   }
 
-  playVictory() {
+  playVictory(speechText = 'Vitória dos Trabalhadores!') {
     if (this.muted) return;
     this.ensureContext();
     if (!this.ctx) return;
@@ -336,7 +336,7 @@ class SoundManager {
       cursor += item.d;
     });
 
-    this.speak('Vitória dos companheiros!');
+    this.speak(speechText);
   }
 
   speak(text) {

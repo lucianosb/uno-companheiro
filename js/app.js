@@ -597,13 +597,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const winAvatar = document.getElementById('win-avatar');
 
     if (winner.id === 0) {
-      winTitle.textContent = '🎉 VITÓRIA COMPANHEIRO(A)!';
-      winText.textContent = 'Você venceu a mesa com união e companheirismo!';
+      winTitle.textContent = '🎉 VITÓRIA DOS TRABALHADORES!';
+      winText.textContent = winner.winQuote || 'O povo trabalhador mostrou sua força e venceu a partida!';
       winAvatar.textContent = '🏆';
     } else {
       winTitle.textContent = `VITÓRIA DE ${winner.name.toUpperCase()}!`;
       const winQuotes = winner.quotes || [winner.quote];
-      const winQuote = winQuotes[Math.floor(Math.random() * winQuotes.length)];
+      const winQuote = winner.winQuote || winner.quote;
       winText.textContent = `"${winQuote}"`;
       winAvatar.textContent = winner.avatar;
     }

@@ -41,6 +41,7 @@ class UnoGame {
         hand: [],
         avatar: '🧑',
         quote: 'A esperança venceu o medo!',
+        winQuote: 'O povo trabalhador mostrou sua força e venceu a partida!',
         quotes: [
           'A esperança venceu o medo!',
           'Trabalhadores e trabalhadoras do baralho, uni-vos!',
@@ -56,6 +57,7 @@ class UnoGame {
         hand: [],
         avatar: '📚',
         quote: 'Ajustando as alíquotas do baralho!',
+        winQuote: 'Contas fechadas no azul e mão zerada! Meta fiscal cumprida com sucesso!',
         quotes: [
           'Ajustando as alíquotas do baralho!',
           'Essa compra de cartas está sujeita ao imposto de importação!',
@@ -71,6 +73,7 @@ class UnoGame {
         hand: [],
         avatar: '🥣',
         quote: 'Com calma e chuchu, a gente vence a mesa.',
+        winQuote: 'Com diálogo, moderação e um bom cafezinho, chegamos lá na frente!',
         quotes: [
           'Com calma e chuchu, a gente vence a mesa.',
           'Uma aliança ampla e democrática contra a sua vitória!',
@@ -86,6 +89,7 @@ class UnoGame {
         hand: [],
         avatar: '✨',
         quote: 'Companheirismo e alegria em cada jogada!',
+        winQuote: 'O amor venceu na mesa! Pode soltar a música que a festa da vitória começou!',
         quotes: [
           'Companheirismo e alegria em cada jogada!',
           'A Resistência e a Paris aprovaram esse descarte!',
@@ -669,8 +673,8 @@ class UnoGame {
   handleGameOver(winner) {
     this.isGameOver = true;
     this.winner = winner;
-    this.logAction(`🏆 FIM DE JOGO! O companheiro(a) ${winner.name} venceu a partida!`);
-    if (window.soundManager) window.soundManager.playVictory();
+    this.logAction(winner.id === 0 ? '🏆 FIM DE JOGO! Vitória dos Trabalhadores!' : `🏆 FIM DE JOGO! ${winner.name} venceu a partida!`);
+    if (window.soundManager) window.soundManager.playVictory(winner.id === 0 ? `Vitória dos Trabalhadores! ${winner.winQuote}` : winner.winQuote);
     this.notifyState();
   }
 
